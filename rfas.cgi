@@ -13,7 +13,7 @@ use DateTime;
 use CGI::Carp qw(warningsToBrowser fatalsToBrowser);
 
 ### Import config file vars ###
-open CONFIG, "includes/config.pl"
+open CONFIG, "includes/rfas_config.pl"
 or die "Couldn't open the config file.";
 my $config = join "", <CONFIG>;
 close CONFIG;
