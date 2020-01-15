@@ -59,9 +59,9 @@ print "Routesetting Feedback Analysis System, V0.5. <br><br><br>\n";
 
 if ($action eq "") {
 	print "What would you like to do?\n<p>\n
-		<a href=\"http://localhost/cgi-bin/rfas.cgi?action=add\"/>Add Feedback</a><br>\n
-		<a href=\"http://localhost/cgi-bin/rfas.cgi?action=print\"/>Print Report</a><br>\n
-		<a href=\"http://localhost/cgi-bin/rfas.cgi?action=team\"/>Team Report</a><br>\n";
+		<a href=\"rfas.cgi?action=add\"/>Add Feedback</a><br>\n
+		<a href=\"rfas.cgi?action=print\"/>Print Report</a><br>\n
+		<a href=\"rfas.cgi?action=team\"/>Team Report</a><br>\n";
 }
 
 ########### Run Add Feedback if Selected ##########
@@ -424,9 +424,9 @@ elsif ($action eq "Submit") {
 
 	print "Feedback successfully entered! <p>\n
 			What would you like to do now?\n<p>\n
-			<a href=\"http://localhost/cgi-bin/rfas.cgi?action=add\"/>Add Feedback</a><br>\n
-			<a href=\"http://localhost/cgi-bin/rfas.cgi?action=print\"/>Print Report</a><br>\n
-			<a href=\"http://localhost/cgi-bin/rfas.cgi?action=team\"/>Team Report</a><br>\n";
+			<a href=\"rfas.cgi?action=add\"/>Add Feedback</a><br>\n
+			<a href=\"rfas.cgi?action=print\"/>Print Report</a><br>\n
+			<a href=\"rfas.cgi?action=team\"/>Team Report</a><br>\n";
 }
 
 ############# Run Print Report if Selected ###############
