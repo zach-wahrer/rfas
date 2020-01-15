@@ -22,7 +22,7 @@ die "Couldn't interpret the configuration file.\nError: $@\n" if $@;
 
 ### Connect to Database ###
 $dbh = DBI->connect('dbi:mysql:route_feedback', $mysql_username, $mysql_password)
-or die "Connection Error: $DBI::errstr\n $config";
+or die "Connection Error: $DBI::errstr\n";
 
 ### Get Variables from HTML Line Input ###
 $q = CGI->new();
