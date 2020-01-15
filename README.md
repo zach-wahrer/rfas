@@ -18,6 +18,13 @@ For RFAS to run on your system, you'll need the following:
     * DBI
     * GD-graph
 
+### Database Setup
+---
+Likely, the easiest way to set up a RFAS database is to use `phpmyadmin`. YMMV.
+
+1. Import the `route_feedback.sql` file into your MySQL server (using `phpmyadmin`, if you choose), and this will set up the structure you need.
+2. Manually insert your setters' names into the `Setter_Index` table. You should only have to do a name, as the `ID` will auto-increment. If you ever need to remove a setter, don't delete them from the table. Simply add a `#` before their name.
+
 ### Installing
 ---
 1. Copy the `rfas.cgi` and `grapher.cgi` files into your web server's `cgi-bin`. Make sure the file permissions are set to allow execution of the files.
@@ -25,10 +32,6 @@ For RFAS to run on your system, you'll need the following:
 3. Edit `includes/rfas_config.pl` and change the variables to reflect your MySQL username / password.
 4. Make sure your web server permissions will not allow someone to open the config file and see your password.
 5. Navigate to your web server via a browser and open `rfas.cgi`. If you did everything correctly, you should see "What would you like to do?"
-
-### Database Setup
----
-Todo
 
 ### Built With
 ---
