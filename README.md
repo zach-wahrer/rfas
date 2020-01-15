@@ -46,4 +46,4 @@ Likely, the easiest way to set up a RFAS database is to use `phpmyadmin`. YMMV.
 
 ## License
 ---
-MPV is licensed under the GNU General Public License. Check out the [LICENSE](LICENSE) for more details.
+RFAS is licensed under the GNU General Public License. Check out the [LICENSE](LICENSE) for more details.
