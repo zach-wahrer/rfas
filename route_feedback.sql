@@ -1,23 +1,23 @@
 -- phpMyAdmin SQL Dump
--- version 4.6.6deb5
--- https://www.phpmyadmin.net/
+-- version 3.4.11.1deb1
+-- http://www.phpmyadmin.net
 --
--- Host: localhost:3306
--- Generation Time: Jan 15, 2020 at 11:11 AM
--- Server version: 5.7.28-0ubuntu0.18.04.4
--- PHP Version: 7.2.24-0ubuntu0.18.04.1
+-- Host: localhost
+-- Generation Time: Jun 29, 2014 at 08:15 AM
+-- Server version: 5.5.37
+-- PHP Version: 5.4.6-1ubuntu1.8
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!40101 SET NAMES utf8 */;
 
 --
--- Database: `route_feedback_structure`
+-- Database: `route_feedback`
 --
 
 -- --------------------------------------------------------
@@ -26,10 +26,35 @@ SET time_zone = "+00:00";
 -- Table structure for table `Boulder_Grade_Index`
 --
 
-CREATE TABLE `Boulder_Grade_Index` (
-  `ID` int(2) NOT NULL,
-  `Boulder Grade` varchar(5) CHARACTER SET hp8 NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+CREATE TABLE IF NOT EXISTS `Boulder_Grade_Index` (
+  `ID` int(2) NOT NULL AUTO_INCREMENT,
+  `Boulder Grade` varchar(5) CHARACTER SET hp8 NOT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `ID` (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=18 ;
+
+--
+-- Dumping data for table `Boulder_Grade_Index`
+--
+
+INSERT INTO `Boulder_Grade_Index` (`ID`, `Boulder Grade`) VALUES
+(1, 'VEasy'),
+(2, 'V0'),
+(3, 'V1'),
+(4, 'V2'),
+(5, 'V3'),
+(6, 'V4'),
+(7, 'V5'),
+(8, 'V6'),
+(9, 'V7'),
+(10, 'V8'),
+(11, 'V9'),
+(12, 'V10'),
+(13, 'V11'),
+(14, 'V12'),
+(15, 'V13'),
+(16, 'V14'),
+(17, 'V15');
 
 -- --------------------------------------------------------
 
@@ -37,8 +62,8 @@ CREATE TABLE `Boulder_Grade_Index` (
 -- Table structure for table `Feedback_Data`
 --
 
-CREATE TABLE `Feedback_Data` (
-  `Index` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `Feedback_Data` (
+  `Index` int(11) NOT NULL AUTO_INCREMENT,
   `Name1` varchar(2) NOT NULL,
   `Name2` varchar(2) NOT NULL,
   `Name3` varchar(2) NOT NULL,
@@ -77,19 +102,50 @@ CREATE TABLE `Feedback_Data` (
   `Comment5` varchar(100) NOT NULL,
   `Comment6` varchar(100) NOT NULL,
   `Comment7` varchar(100) NOT NULL,
-  `Comment8` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=hp8;
-
--- --------------------------------------------------------
+  `Comment8` varchar(100) NOT NULL,
+  PRIMARY KEY (`Index`),
+  KEY `Index` (`Index`),
+  KEY `Index_2` (`Index`)
+) ENGINE=InnoDB  DEFAULT CHARSET=hp8 AUTO_INCREMENT=2631 ;
 
 --
 -- Table structure for table `Route_Grade_Index`
 --
 
-CREATE TABLE `Route_Grade_Index` (
-  `ID` int(2) NOT NULL,
-  `Route Grade` varchar(6) CHARACTER SET hp8 NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+CREATE TABLE IF NOT EXISTS `Route_Grade_Index` (
+  `ID` int(2) NOT NULL AUTO_INCREMENT,
+  `Route Grade` varchar(6) CHARACTER SET hp8 NOT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `ID` (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=23 ;
+
+--
+-- Dumping data for table `Route_Grade_Index`
+--
+
+INSERT INTO `Route_Grade_Index` (`ID`, `Route Grade`) VALUES
+(1, '5.Easy'),
+(2, '5.5'),
+(3, '5.6'),
+(4, '5.7'),
+(5, '5.8'),
+(6, '5.9'),
+(7, '5.10-'),
+(8, '5.10'),
+(9, '5.10+'),
+(10, '5.11-'),
+(11, '5.11'),
+(12, '5.11+'),
+(13, '5.12-'),
+(14, '5.12'),
+(15, '5.12+'),
+(16, '5.13-'),
+(17, '5.13'),
+(18, '5.13+'),
+(19, '5.14-'),
+(20, '5.14'),
+(21, '5.14+'),
+(22, '5.15-');
 
 -- --------------------------------------------------------
 
@@ -97,67 +153,20 @@ CREATE TABLE `Route_Grade_Index` (
 -- Table structure for table `Setter_Index`
 --
 
-CREATE TABLE `Setter_Index` (
-  `ID` int(2) NOT NULL,
-  `Name` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+CREATE TABLE IF NOT EXISTS `Setter_Index` (
+  `ID` int(2) NOT NULL AUTO_INCREMENT,
+  `Name` text NOT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=18 ;
 
 --
--- Indexes for dumped tables
+-- Dumping data for table `Setter_Index`
 --
 
---
--- Indexes for table `Boulder_Grade_Index`
---
-ALTER TABLE `Boulder_Grade_Index`
-  ADD PRIMARY KEY (`ID`),
-  ADD KEY `ID` (`ID`);
+INSERT INTO `Setter_Index` (`ID`, `Name`) VALUES
+(1, 'Default');
 
---
--- Indexes for table `Feedback_Data`
---
-ALTER TABLE `Feedback_Data`
-  ADD PRIMARY KEY (`Index`),
-  ADD KEY `Index` (`Index`),
-  ADD KEY `Index_2` (`Index`);
 
---
--- Indexes for table `Route_Grade_Index`
---
-ALTER TABLE `Route_Grade_Index`
-  ADD PRIMARY KEY (`ID`),
-  ADD KEY `ID` (`ID`);
-
---
--- Indexes for table `Setter_Index`
---
-ALTER TABLE `Setter_Index`
-  ADD PRIMARY KEY (`ID`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `Boulder_Grade_Index`
---
-ALTER TABLE `Boulder_Grade_Index`
-  MODIFY `ID` int(2) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
---
--- AUTO_INCREMENT for table `Feedback_Data`
---
-ALTER TABLE `Feedback_Data`
-  MODIFY `Index` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2634;
---
--- AUTO_INCREMENT for table `Route_Grade_Index`
---
-ALTER TABLE `Route_Grade_Index`
-  MODIFY `ID` int(2) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
---
--- AUTO_INCREMENT for table `Setter_Index`
---
-ALTER TABLE `Setter_Index`
-  MODIFY `ID` int(2) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
