@@ -31,7 +31,8 @@ Likely, the easiest way to set up a RFAS database is to use `phpmyadmin`. YMMV.
 2. Copy the `includes` directory into the `cgi-bin`. Rename `includes/rfas_config.sample.pl` to `includes/rfas.config.pl`.
 3. Edit `includes/rfas_config.pl` and change the variables to reflect your MySQL username / password.
 4. Make sure your web server permissions will not allow someone to open the config file and see your password.
-5. Navigate to your web server via a browser and open `rfas.cgi`. If you did everything correctly, you should see "What would you like to do?"
+5. DO NOT leave `rfas.cgi` without some type of password protection (utilizing a `.htaccess` file is the easiest). The program was never intended to be run on a publicly available web sever, and some of the design decisions reflect that.
+6. Navigate to your web server via a browser and open `rfas.cgi`. If you did everything correctly, you should see "What would you like to do?"
 
 ### Built With
 ---
