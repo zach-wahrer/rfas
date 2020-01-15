@@ -12,15 +12,15 @@ For RFAS to run on your system, you'll need the following:
 1. A web server capable of serving Perl CGI files. Apache2 works well out of the box.
 2. A MySQL server with a database called `route_feeback`. See **Database Setup** below for more info on database configuration.
 3. The following Perl modules installed on your server:
-  * CGI
-  * DateTime
-  * DBD-mysql
-  * DBI
-  * GD-graph
+    * CGI
+    * DateTime
+    * DBD-mysql
+    * DBI
+    * GD-graph
 
 ### Installing
 ---
-1. Copy the `rfas.cgi` and `grapher.cgi` files into your web server's `cgi-bin`. Make sure the file permissions are set to
+1. Copy the `rfas.cgi` and `grapher.cgi` files into your web server's `cgi-bin`. Make sure the file permissions are set to allow execution of the files.
 2. Copy the `includes` directory into the `cgi-bin`. Rename `includes/rfas_config.sample.pl` to `includes/rfas.config.pl`.
 3. Edit `includes/rfas_config.pl` and change the variables to reflect your MySQL username / password.
 4. Make sure your web server permissions will not allow someone to open the config file and see your password.
