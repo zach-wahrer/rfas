@@ -1,30 +1,6 @@
--- phpMyAdmin SQL Dump
--- version 3.4.11.1deb1
--- http://www.phpmyadmin.net
---
--- Host: localhost
--- Generation Time: Jun 29, 2014 at 08:15 AM
--- Server version: 5.5.37
--- PHP Version: 5.4.6-1ubuntu1.8
-
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+
 SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-
---
--- Database: `route_feedback`
---
-
--- --------------------------------------------------------
-
---
--- Table structure for table `Boulder_Grade_Index`
---
 
 CREATE TABLE IF NOT EXISTS `Boulder_Grade_Index` (
   `ID` int(2) NOT NULL AUTO_INCREMENT,
@@ -32,10 +8,6 @@ CREATE TABLE IF NOT EXISTS `Boulder_Grade_Index` (
   PRIMARY KEY (`ID`),
   KEY `ID` (`ID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=18 ;
-
---
--- Dumping data for table `Boulder_Grade_Index`
---
 
 INSERT INTO `Boulder_Grade_Index` (`ID`, `Boulder Grade`) VALUES
 (1, 'VEasy'),
@@ -55,12 +27,6 @@ INSERT INTO `Boulder_Grade_Index` (`ID`, `Boulder Grade`) VALUES
 (15, 'V13'),
 (16, 'V14'),
 (17, 'V15');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `Feedback_Data`
---
 
 CREATE TABLE IF NOT EXISTS `Feedback_Data` (
   `Index` int(11) NOT NULL AUTO_INCREMENT,
@@ -108,20 +74,12 @@ CREATE TABLE IF NOT EXISTS `Feedback_Data` (
   KEY `Index_2` (`Index`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=hp8 AUTO_INCREMENT=2631 ;
 
---
--- Table structure for table `Route_Grade_Index`
---
-
 CREATE TABLE IF NOT EXISTS `Route_Grade_Index` (
   `ID` int(2) NOT NULL AUTO_INCREMENT,
   `Route Grade` varchar(6) CHARACTER SET hp8 NOT NULL,
   PRIMARY KEY (`ID`),
   KEY `ID` (`ID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=23 ;
-
---
--- Dumping data for table `Route_Grade_Index`
---
 
 INSERT INTO `Route_Grade_Index` (`ID`, `Route Grade`) VALUES
 (1, '5.Easy'),
@@ -147,26 +105,11 @@ INSERT INTO `Route_Grade_Index` (`ID`, `Route Grade`) VALUES
 (21, '5.14+'),
 (22, '5.15-');
 
--- --------------------------------------------------------
-
---
--- Table structure for table `Setter_Index`
---
-
 CREATE TABLE IF NOT EXISTS `Setter_Index` (
   `ID` int(2) NOT NULL AUTO_INCREMENT,
   `Name` text NOT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=18 ;
 
---
--- Dumping data for table `Setter_Index`
---
-
 INSERT INTO `Setter_Index` (`ID`, `Name`) VALUES
 (1, 'Default');
-
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
