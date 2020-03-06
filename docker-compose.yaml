@@ -4,7 +4,6 @@ services:
         image: mysql:5.7
         restart: always
         environment:
-            MYSQL_DATABASE: 'route_feedback'
             MYSQL_ROOT_PASSWORD: 'password'
         ports:
             - '3306'
