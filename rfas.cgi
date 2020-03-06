@@ -13,7 +13,7 @@ use DateTime;
 use CGI::Carp qw(warningsToBrowser fatalsToBrowser);
 
 ### Import config file vars ###
-open CONFIG, "includes/rfas_config.pl"
+open CONFIG, "/usr/config/rfas_config.pl"
 or die "Couldn't open the config file.";
 my $config = join "", <CONFIG>;
 close CONFIG;
@@ -21,7 +21,7 @@ eval $config;
 die "Couldn't interpret the configuration file.\nError: $@\n" if $@;
 
 ### Connect to Database ###
-$dbh = DBI->connect('dbi:mysql:route_feedback', $mysql_username, $mysql_password)
+$dbh = DBI->connect('dbi:mysql:route_feedback;host=db', $mysql_username, $mysql_password)
 or die "Connection Error: $DBI::errstr\n";
 
 ### Get Variables from HTML Line Input ###
