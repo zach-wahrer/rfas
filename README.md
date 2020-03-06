@@ -40,10 +40,12 @@ For RFAS to run on your system, you'll need the following:
 1. Complete steps 1 and 2 under **Installing** below.
 2. In the `includes` directory, open `route_feedback.sql`. Scroll to the bottom, and add your routesetters under `Default`, using this format:
 
-```INSERT INTO \`Setter_Index\` (\`ID\`, \`Name\`) VALUES
+```
+INSERT INTO `Setter_Index` (`ID`, `Name`) VALUES
 (1, 'Default'),
 (2, 'Name 1'),
-(3, 'Name 2');``` etc.
+(3, 'Name 2');
+```
 
 Note: If you ever need to remove a setter from RFAS, don't delete them from the `Setter_Index` table. Simply add a `#` before their name. Otherwise, it will break the program.
 3. Run `db-setup.pl` in the `includes` folder. This will create a `route_feedback` database in MySQL and create the required structure.
