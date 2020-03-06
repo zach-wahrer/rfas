@@ -24,7 +24,7 @@ Make sure each entry is separated by a `,` and that the last line has a `;` inst
 3. Still in the project's root directory, run `docker-compose up -d`. This will start RFAS as well as a separate MySQL server container.  
 4. Log in to your RFAS container, using `docker exec -it container-id bash`. Replace `container-id` with the id found from `docker ps`.  
 5. Execute `./db-setup.pl` from within the container to set up the required MySQL database and tables.  
-6. In a web browser, navigate to `localhost:8080` and you should see the RFAS welcome screen!
+6. In a web browser, navigate to `localhost:8080`. After clicking `Try it out`, you will be presented with a log in box. After entering the credentials you created earlier, you should see the RFAS welcome screen!
 
 
 ## Development / Manual Install
