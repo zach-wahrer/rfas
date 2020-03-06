@@ -13,6 +13,7 @@ COPY includes/rfas_config.pl /usr/config/rfas_config.pl
 
 WORKDIR /usr/setup
 COPY includes/db-setup.pl /usr/setup/db-setup.pl
+COPY includes/route_feedback.sql /usr/setup/route_feedback.sql
 
 RUN chmod 755 /usr/lib/cgi-bin/grapher.cgi
 RUN chmod 755 /usr/lib/cgi-bin/rfas.cgi
