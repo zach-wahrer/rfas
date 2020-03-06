@@ -47,6 +47,7 @@ INSERT INTO `Setter_Index` (`ID`, `Name`) VALUES
 (3, 'Name 2');
 ```
 
+Make sure each entry is separated by a `,` and that the last line has a `;` instead.
 Note: If you ever need to remove a setter from RFAS, don't delete them from the `Setter_Index` table. Simply add a `#` before their name. Otherwise, it will break the program.
 3. Run `db-setup.pl` in the `includes` folder. This will create a `route_feedback` database in MySQL and create the required structure.
 4. Continue with step 3 under **Installing**.
