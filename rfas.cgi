@@ -459,7 +459,23 @@ elsif ($action eq "print") {
 	print "</select>";
 
 	### Date Boxes
-	print '<br><br>Review Date: <input type="text" name=reviewdate id="datepicker" /><br><br>';
+	print '<br><br>Review Date: <input type="text" name=reviewdate id="datepicker" autocomplete="off"/><br><br>';
+
+	### Print Available Date Range
+	$sql = "SELECT Date FROM `Feedback_Data` ORDER BY Date DESC LIMIT 1;";
+	$sth = $dbh->prepare($sql);
+	$sth->execute
+	or die "SQL Error: $DBI::errstr\n";
+	$newest_date = $sth->fetchrow_array;
+
+	$sql = "SELECT Date FROM `Feedback_Data` ORDER BY Date ASC LIMIT 1;";
+	$sth = $dbh->prepare($sql);
+	$sth->execute
+	or die "SQL Error: $DBI::errstr\n";
+	$oldest_date = $sth->fetchrow_array;
+
+	print "Data available from <b>$oldest_date</b> to <b>$newest_date</b>.<br><br>";
+
 
 	### Print 6 months or year
 	print "Length of Review:<br>";
@@ -1663,6 +1679,21 @@ elsif ($action eq "team") {
 
 	### Date Boxes
 	print '<br><br>Review Date: <input type="text" name=reviewdate id="datepicker" /><br><br>';
+
+	### Print Available Date Range
+	$sql = "SELECT Date FROM `Feedback_Data` ORDER BY Date DESC LIMIT 1;";
+	$sth = $dbh->prepare($sql);
+	$sth->execute
+	or die "SQL Error: $DBI::errstr\n";
+	$newest_date = $sth->fetchrow_array;
+
+	$sql = "SELECT Date FROM `Feedback_Data` ORDER BY Date ASC LIMIT 1;";
+	$sth = $dbh->prepare($sql);
+	$sth->execute
+	or die "SQL Error: $DBI::errstr\n";
+	$oldest_date = $sth->fetchrow_array;
+
+	print "Data available from <b>$oldest_date</b> to <b>$newest_date</b>.<br><br>";
 
 	### Print 6 months or year
 	print "Length of Review:<br>";
