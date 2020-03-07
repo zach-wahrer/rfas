@@ -1678,7 +1678,7 @@ elsif ($action eq "team") {
 	print "<form action=\"rfas.cgi\" name=\"PrintTeamReportForm\" method=\"GET\">\n";
 
 	### Date Boxes
-	print '<br><br>Review Date: <input type="text" name=reviewdate id="datepicker" /><br><br>';
+	print '<br><br>Review Date: <input type="text" name=reviewdate id="datepicker" autocomplete="off"/><br><br>';
 
 	### Print Available Date Range
 	$sql = "SELECT Date FROM `Feedback_Data` ORDER BY Date DESC LIMIT 1;";
