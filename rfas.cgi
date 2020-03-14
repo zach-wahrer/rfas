@@ -24,6 +24,13 @@ die "Couldn't interpret the configuration file.\nError: $@\n" if $@;
 $dbh = DBI->connect("dbi:mysql:route_feedback;host=$mysql_host", $mysql_username, $mysql_password)
 or die "Connection Error: $DBI::errstr\n";
 
+### Define SQL Function
+sub RunSQL {
+	$sth = $dbh->prepare(@_);
+	$sth->execute
+	or die "SQL Error: $DBI::errstr\n";
+}
+
 ### Get Variables from HTML Line Input ###
 $q = CGI->new();
 $action = $q->param('action');
@@ -72,18 +79,13 @@ elsif ($action eq "add") {
 	print "<form action=\"rfas.cgi\" name=\"AddFeedbackForm\" method=\"GET\">\n";
 
 	### Print Setter Name Boxes ###
-	$sql = "SELECT `Name` FROM `Setter_Index`";
-	$sth = $dbh->prepare($sql);
-	$sth->execute
-	or die "SQL Error: $DBI::errstr\n";
-	## Put Results In an Array
+	RunSQL("SELECT `Name` FROM `Setter_Index`");
+
 	while (@row = $sth->fetchrow_array) {
 		push (@setternames, @row);
 	}
-	## Print Boxes
-	print "Setter: \n";
 
-	## Print Combo Box1
+	print "Setter: \n";
 	print "<select name=\"setter1\">\n
 			<option value=\"Blank\"> </option>\n";
 	foreach (@setternames) {
@@ -95,7 +97,6 @@ elsif ($action eq "add") {
 	}
 	print "</select>";
 
-	## Print Combo Box2
 	print "<select name=\"setter2\">
 			<option value=\"Blank\"> </option>\n";
 	foreach (@setternames) {
@@ -106,7 +107,6 @@ elsif ($action eq "add") {
 	}
 	print "</select>";
 
-	##Print Combo Box3
 	print "<select name=\"setter3\">\n
 			<option value=\"Blank\"> </option>\n";
 	foreach (@setternames) {
@@ -120,18 +120,13 @@ elsif ($action eq "add") {
 	### Date Box
 	print '<br><br><br>Date: <input type="text" name=date id="datepicker" /></p>';
 
-
 	### Print Route Rating Boxes
-	$sql = "SELECT `Route Grade` FROM `Route_Grade_Index`";
-	$sth = $dbh->prepare($sql);
-	$sth->execute
-	or die "SQL Error: $DBI::errstr\n";
-	##Put Results In an Array
+	RunSQL("SELECT `Route Grade` FROM `Route_Grade_Index`");
+
 	while (@row = $sth->fetchrow_array) {
 		push (@routegrade, @row);
 	}
 
-	##Print Grade Box
 	print "<br><br>Route Rating: \n";
 	print "<select name=\"routegrade\">\n
 			<option value=\"Blank\"> </option>\n";
@@ -140,7 +135,6 @@ elsif ($action eq "add") {
 	}
 	print "</select>";
 
-	##  Print Original Grade Box
 	print "<p>Orignal Route Rating:\n";
 	print "<select name=\"routeoriginalgrade\">\n
 			<option value=\"Blank\"> </option>\n";
@@ -149,17 +143,13 @@ elsif ($action eq "add") {
 	}
 	print "</select>\n\n";
 
-
 	###Print Boulder Rating Boxes
-	$sql = "SELECT `Boulder Grade` FROM `Boulder_Grade_Index`";
-	$sth = $dbh->prepare($sql);
-	$sth->execute
-	or die "SQL Error: $DBI::errstr\n";
+	RunSQL("SELECT `Boulder Grade` FROM `Boulder_Grade_Index`");
+
 	while (@row = $sth->fetchrow_array) {
 		push (@bouldergrade, @row);
 	}
 
-	##Print Grade Box
 	print "<br><br><br>Boulder Rating: \n";
 	print "<select name=\"bouldergrade\">\n
 			<option value=\"Blank\"> </option>\n";
@@ -168,7 +158,6 @@ elsif ($action eq "add") {
 	}
 	print "</select>";
 
-	##  Print Original Grade Box
 	print "<p>Orignal Boulder Rating:\n";
 	print "<select name=\"boulderoriginalgrade\">\n
 			<option value=\"Blank\"> </option>\n";
@@ -177,10 +166,9 @@ elsif ($action eq "add") {
 	}
 	print "</select>\n\n";
 
-
 	###Feedback Matrix
 	print "<br><br><br>Feedback:<p>\n";
-	### Soft Feedback
+
 	print "Soft: \n";
 	print '<input type="text" maxlength="3" size="2" name="Soft1">';
 	print '<input type="text" maxlength="3" size="2" name="Soft2">';
@@ -191,7 +179,6 @@ elsif ($action eq "add") {
 	print '<input type="text" maxlength="3" size="2" name="Soft7">';
 	print '<input type="text" maxlength="3" size="2" name="Soft8">';
 
-	### On Grade Feedback
 	print "<p>On: \n";
 	print '<input type="text" maxlength="3" size="2" name="On1">';
 	print '<input type="text" maxlength="3" size="2" name="On2">';
@@ -202,7 +189,6 @@ elsif ($action eq "add") {
 	print '<input type="text" maxlength="3" size="2" name="On7">';
 	print '<input type="text" maxlength="3" size="2" name="On8">';
 
-	### Hard Feedback
 	print "<p>Hard: \n";
 	print '<input type="text" maxlength="3" size="2" name="Hard1">';
 	print '<input type="text" maxlength="3" size="2" name="Hard2">';
@@ -213,7 +199,6 @@ elsif ($action eq "add") {
 	print '<input type="text" maxlength="3" size="2" name="Hard7">';
 	print '<input type="text" maxlength="3" size="2" name="Hard8">';
 
-	#### Comment Boxes
 	print '<br><br>Comment 1: <input type="text" maxlength="100" size="50" name="Comment1"><br>';
 	print 'Comment 2: <input type="text" maxlength="100" size="50" name="Comment2"><br>';
 	print 'Comment 3: <input type="text" maxlength="100" size="50" name="Comment3"><br>';
@@ -288,35 +273,20 @@ elsif ($action eq "Submit") {
 		die "You have to enter a First Setter!";
 	}
 	else {
-		$sql = "SELECT `ID` FROM `Setter_Index` WHERE `Name` = \"$setter1\"";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
-
+		RunSQL("SELECT `ID` FROM `Setter_Index` WHERE `Name` = \"$setter1\"");
 		$setter1 = $sth->fetchrow_array;
 
-		## Get IDs if 2nd Setter Exist and if not, make null
 		if ($setter2 ne "Blank") {
-			$sql = "SELECT `ID` FROM `Setter_Index` WHERE `Name` = \"$setter2\"";
-			$sth = $dbh->prepare($sql);
-			$sth->execute
-			or die "SQL Error: $DBI::errstr\n";
-
+			RunSQL("SELECT `ID` FROM `Setter_Index` WHERE `Name` = \"$setter2\"");
 			$setter2 = $sth->fetchrow_array;
 		}
 		else {
 			$setter2 = undef;
 		}
 
-		## Get IDs if 3rd Setters Exist	and if not, make null
 		if ($setter3 ne "Blank") {
-			$sql = "SELECT `ID` FROM `Setter_Index` WHERE `Name` = \"$setter3\"";
-			$sth = $dbh->prepare($sql);
-			$sth->execute
-			or die "SQL Error: $DBI::errstr\n";
-
+			RunSQL("SELECT `ID` FROM `Setter_Index` WHERE `Name` = \"$setter3\"");
 			$setter3 = $sth->fetchrow_array;
-
 		}
 		else {
 			$setter3 = undef;
@@ -356,52 +326,29 @@ elsif ($action eq "Submit") {
 
 	### Look up route grade ID and original grade if route is selected
 	if ($routegrade ne "Blank") {
-		$sql = "SELECT `ID` FROM `Route_Grade_Index` WHERE `Route Grade` = \"$routegrade\"";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
-
+		RunSQL("SELECT `ID` FROM `Route_Grade_Index` WHERE `Route Grade` = \"$routegrade\"");
 		$routegrade = $sth->fetchrow_array;
-
-		## Set Type to Route and make grade variable
 		$type = "R";
 		$grade = $routegrade;
 	}
 
 	if ($routeoriginalgrade ne "Blank") {
-		$sql = "SELECT `ID` FROM `Route_Grade_Index` WHERE `Route Grade` = \"$routeoriginalgrade\"";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
-
+		RunSQL("SELECT `ID` FROM `Route_Grade_Index` WHERE `Route Grade` = \"$routeoriginalgrade\"");
 		$routeoriginalgrade = $sth->fetchrow_array;
-
-		##Set grade variable
 		$originalgrade = $routeoriginalgrade;
 	}
 
 	### Look up boulder grade ID and original grade if boulder is selected
 	if ($bouldergrade ne "Blank") {
-
-		$sql = "SELECT `ID` FROM `Boulder_Grade_Index` WHERE `Boulder Grade` = \"$bouldergrade\"";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `ID` FROM `Boulder_Grade_Index` WHERE `Boulder Grade` = \"$bouldergrade\"");
 		$bouldergrade = $sth->fetchrow_array;
-
-		## Set Type to Boulder and make grade variable
 		$type = "B";
 		$grade = $bouldergrade;
 	}
 
 	if ($boulderoriginalgrade ne "Blank") {
-		$sql = "SELECT `ID` FROM `Boulder_Grade_Index` WHERE `Boulder Grade` = \"$boulderoriginalgrade\"";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `ID` FROM `Boulder_Grade_Index` WHERE `Boulder Grade` = \"$boulderoriginalgrade\"");
 		$boulderoriginalgrade = $sth->fetchrow_array;
-
-		##Set grade variable
 		$originalgrade = $boulderoriginalgrade;
 	}
 
@@ -416,11 +363,8 @@ elsif ($action eq "Submit") {
 	}
 
 	### Put Data Into Database ###
-	$sql = "INSERT INTO `route_feedback`.`Feedback_Data` (`Index`, `Name1`, `Name2`, `Name3`, `Type`, `Grade`, `OriginalGrade`, `Date`, `Soft1.Quality`, `Soft2.Quality`, `Soft3.Quality`, `Soft4.Quality`, `Soft5.Quality`, `Soft6.Quality`, `Soft7.Quality`, `Soft8.Quality`, `On1.Quality`, `On2.Quality`, `On3.Quality`, `On4.Quality`, `On5.Quality`, `On6.Quality`, `On7.Quality`, `On8.Quality`, `Hard1.Quality`, `Hard2.Quality`, `Hard3.Quality`, `Hard4.Quality`, `Hard5.Quality`, `Hard6.Quality`, `Hard7.Quality`, `Hard8.Quality`, `Comment1`, `Comment2`, `Comment3`, `Comment4`, `Comment5`, `Comment6`, `Comment7`, `Comment8`)
-		VALUES (NULL, '$setter1', '$setter2', '$setter3', '$type', '$grade', '$originalgrade', '$date', '$Soft1', '$Soft2', '$Soft3', '$Soft4', '$Soft5', '$Soft6', '$Soft7', '$Soft8', '$On1', '$On2', '$On3', '$On4', '$On5', '$On6', '$On7', '$On8', '$Hard1', '$Hard2', '$Hard3', '$Hard4', '$Hard5', '$Hard6', '$Hard7', '$Hard8', '$Comment1', '$Comment2', '$Comment3', '$Comment4', '$Comment5', '$Comment6', '$Comment7', '$Comment8');";
-	$sth = $dbh->prepare($sql);
-	$sth->execute
-	or die "SQL Error: $DBI::errstr\n";
+	RunSQL("INSERT INTO `route_feedback`.`Feedback_Data` (`Index`, `Name1`, `Name2`, `Name3`, `Type`, `Grade`, `OriginalGrade`, `Date`, `Soft1.Quality`, `Soft2.Quality`, `Soft3.Quality`, `Soft4.Quality`, `Soft5.Quality`, `Soft6.Quality`, `Soft7.Quality`, `Soft8.Quality`, `On1.Quality`, `On2.Quality`, `On3.Quality`, `On4.Quality`, `On5.Quality`, `On6.Quality`, `On7.Quality`, `On8.Quality`, `Hard1.Quality`, `Hard2.Quality`, `Hard3.Quality`, `Hard4.Quality`, `Hard5.Quality`, `Hard6.Quality`, `Hard7.Quality`, `Hard8.Quality`, `Comment1`, `Comment2`, `Comment3`, `Comment4`, `Comment5`, `Comment6`, `Comment7`, `Comment8`)
+		VALUES (NULL, '$setter1', '$setter2', '$setter3', '$type', '$grade', '$originalgrade', '$date', '$Soft1', '$Soft2', '$Soft3', '$Soft4', '$Soft5', '$Soft6', '$Soft7', '$Soft8', '$On1', '$On2', '$On3', '$On4', '$On5', '$On6', '$On7', '$On8', '$Hard1', '$Hard2', '$Hard3', '$Hard4', '$Hard5', '$Hard6', '$Hard7', '$Hard8', '$Comment1', '$Comment2', '$Comment3', '$Comment4', '$Comment5', '$Comment6', '$Comment7', '$Comment8');");
 
 	print "Feedback successfully entered! <p>\n
 			What would you like to do now?\n<p>\n
@@ -437,17 +381,12 @@ elsif ($action eq "print") {
 	print "<form action=\"rfas.cgi\" name=\"PrintReportForm\" method=\"GET\">\n";
 
 	### Print Setter Name Box
-	$sql = "SELECT `Name` FROM `Setter_Index`";
-	$sth = $dbh->prepare($sql);
-	$sth->execute
-	or die "SQL Error: $DBI::errstr\n";
+	RunSQL("SELECT `Name` FROM `Setter_Index`");
 	while (@row = $sth->fetchrow_array) {
 		push (@setternames, @row);
 	}
 
 	print "Setter: \n";
-
-	## Print Combo Box1
 	print "<select name=\"setter\">\n
 			<option value=\"Blank\"> </option>\n";
 	foreach (@setternames) {
@@ -461,23 +400,12 @@ elsif ($action eq "print") {
 	### Date Boxes
 	print '<br><br>Review Date: <input type="text" name=reviewdate id="datepicker" autocomplete="off"/><br><br>';
 
-	### Print Available Date Range
-	$sql = "SELECT Date FROM `Feedback_Data` ORDER BY Date DESC LIMIT 1;";
-	$sth = $dbh->prepare($sql);
-	$sth->execute
-	or die "SQL Error: $DBI::errstr\n";
+	RunSQL("SELECT Date FROM `Feedback_Data` ORDER BY Date DESC LIMIT 1;");
 	$newest_date = $sth->fetchrow_array;
-
-	$sql = "SELECT Date FROM `Feedback_Data` ORDER BY Date ASC LIMIT 1;";
-	$sth = $dbh->prepare($sql);
-	$sth->execute
-	or die "SQL Error: $DBI::errstr\n";
+	RunSQL("SELECT Date FROM `Feedback_Data` ORDER BY Date ASC LIMIT 1;");
 	$oldest_date = $sth->fetchrow_array;
-
 	print "Data available from <b>$oldest_date</b> to <b>$newest_date</b>.<br><br>";
 
-
-	### Print 6 months or year
 	print "Length of Review:<br>";
 	print '<input type="radio" name="duration" value="sixmonths"> 6 Months<br>';
 	print '<input type="radio" name="duration" value="oneyear"> 1 Year<br>';
@@ -524,10 +452,7 @@ elsif ($action eq "Report") {
 	}
 
 	##Get Setter ID
-	$sql = "SELECT `ID` FROM `Setter_Index` WHERE `Name` = \"$setter\"";
-	$sth = $dbh->prepare($sql);
-	$sth->execute
-	or die "SQL Error: $DBI::errstr\n";
+	RunSQL("SELECT `ID` FROM `Setter_Index` WHERE `Name` = \"$setter\";");
 	while (@row = $sth->fetchrow_array) {
 		push (@ID, @row);
 	}
@@ -549,10 +474,8 @@ elsif ($action eq "Report") {
 
 	### Put All Soft Feedback into An Array
 	foreach (@softquality) {
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\")";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		$quality = $_;
+		RunSQL("SELECT `$quality` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\");");
 
 		#Zero Out Array for Each pass
 		@softqualityratings = ();
@@ -562,10 +485,7 @@ elsif ($action eq "Report") {
 		push (@softratings, @softqualityratings);
 
 		## Get Gym Total Soft Feedback ##
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\'";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `$quality` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\';");
 
 		#Zero Out Array for Each pass
 		@gymsoftqualityratings = ();
@@ -604,10 +524,8 @@ elsif ($action eq "Report") {
 
 	### Put All On Feedback into An Array
 	foreach (@onquality) {
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\")";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		$quality = $_;
+		RunSQL("SELECT `$quality` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\");");
 
 		#Zero Out Array for Each pass
 		@onqualityratings = ();
@@ -619,10 +537,7 @@ elsif ($action eq "Report") {
 
 	### Gym Wide On Feedback
 	foreach (@onquality) {
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\'";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `$quality` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\';");
 
 		#Zero Out Array for Each pass
 		@gymonqualityratings = ();
@@ -661,10 +576,8 @@ elsif ($action eq "Report") {
 
 	### Put All Hard Feedback into An Array
 	foreach (@hardquality) {
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\")";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		$quality = $_;
+		RunSQL("SELECT `$quality` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\");");
 
 		#Zero Out Array for Each pass
 		@hardqualityratings = ();
@@ -676,10 +589,7 @@ elsif ($action eq "Report") {
 
 	### GYM Hard Feedback
 	foreach (@hardquality) {
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\'";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `$quality` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\'");
 
 		#Zero Out Array for Each pass
 		@gymhardqualityratings = ();
@@ -755,10 +665,7 @@ elsif ($action eq "Report") {
 
 	### Put All Soft Feedback into An Array
 	foreach (@softquality) {
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"B\")";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"B\")");
 
 		#Zero Out Array for Each pass
 		@bouldersoftqualityratings = ();
@@ -768,10 +675,8 @@ elsif ($action eq "Report") {
 			push (@bouldersoftratings, @bouldersoftqualityratings);
 
 		## GYM Feedback
-			$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"B\")";
-			$sth = $dbh->prepare($sql);
-			$sth->execute
-			or die "SQL Error: $DBI::errstr\n";
+			RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"B\")");
+
 			#Zero Out Array for Each pass
 			@gymbouldersoftqualityratings = ();
 			while (@row = $sth->fetchrow_array) {
@@ -809,10 +714,7 @@ elsif ($action eq "Report") {
 
 	### Put All On Feedback into An Array
 	foreach (@onquality) {
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"B\")";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"B\")");
 
 		#Zero Out Array for Each pass
 		@boulderonqualityratings = ();
@@ -822,10 +724,7 @@ elsif ($action eq "Report") {
 		push (@boulderonratings, @boulderonqualityratings);
 
 		## GYM Feedback
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"B\")";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"B\")");
 
 		#Zero Out Array for Each pass
 		@gymboulderonqualityratings = ();
@@ -869,10 +768,7 @@ elsif ($action eq "Report") {
 
 	### Put All Hard Feedback into An Array
 	foreach (@hardquality) {
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"B\")";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"B\")");
 
 		#Zero Out Array for Each pass
 		@boulderhardqualityratings = ();
@@ -882,10 +778,8 @@ elsif ($action eq "Report") {
 			push (@boulderhardratings, @boulderhardqualityratings);
 
 		## GYM Feedback
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"B\")";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"B\")");
+
 		#Zero Out Array for Each pass
 		@gymboulderhardqualityratings = ();
 		while (@row = $sth->fetchrow_array) {
@@ -960,10 +854,7 @@ elsif ($action eq "Report") {
 
 	### Put All Soft Feedback into An Array
 	foreach (@softquality) {
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"R\")";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"R\")");
 
 		#Zero Out Array for Each pass
 		@routesoftqualityratings = ();
@@ -973,10 +864,7 @@ elsif ($action eq "Report") {
 		push (@routesoftratings, @routesoftqualityratings);
 
 		## GYM Feedback
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"R\")";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"R\")");
 
 		#Zero Out Array for Each pass
 		@gymroutesoftqualityratings = ();
@@ -1015,10 +903,7 @@ elsif ($action eq "Report") {
 
 	### Put All On Feedback into An Array
 	foreach (@onquality) {
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"R\")";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"R\");");
 
 		#Zero Out Array for Each pass
 		@routeonqualityratings = ();
@@ -1028,10 +913,7 @@ elsif ($action eq "Report") {
 		push (@routeonratings, @routeonqualityratings);
 
 		## GYM Feedback
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"R\")";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"R\");");
 
 		#Zero Out Array for Each pass
 		@gymrouteonqualityratings = ();
@@ -1070,10 +952,7 @@ elsif ($action eq "Report") {
 
 	### Put All Hard Feedback into An Array
 	foreach (@hardquality) {
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"R\")";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"R\");");
 
 		#Zero Out Array for Each pass
 		@routehardqualityratings = ();
@@ -1083,10 +962,7 @@ elsif ($action eq "Report") {
 		push (@routehardratings, @routehardqualityratings);
 
 		## GYM Feedback
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"R\")";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"R\");");
 
 		#Zero Out Array for Each pass
 		@gymroutehardqualityratings = ();
@@ -1159,10 +1035,7 @@ elsif ($action eq "Report") {
 	########## BOULDER % OF GRADE SET W/ FEEDBACK ###########
 
 	@feedbackquality = (@softquality,@onquality,@hardquality);
-	$sql = "SELECT  `ID` FROM  `Boulder_Grade_Index` ";
-	$sth = $dbh->prepare($sql);
-	$sth->execute
-	or die "SQL Error: $DBI::errstr\n";
+	RunSQL("SELECT  `ID` FROM  `Boulder_Grade_Index`;");
 
 	while (@row = $sth->fetchrow_array) {
 		push (@boulderindexgrades, @row);
@@ -1172,10 +1045,7 @@ elsif ($action eq "Report") {
 	foreach (@boulderindexgrades) {
 
 		### For Number Set Per Grade ###
-		$sql = "SELECT `Index` FROM `Feedback_Data` WHERE `Grade` = \"$_\" AND`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"B\") ";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `Index` FROM `Feedback_Data` WHERE `Grade` = \"$_\" AND`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"B\");");
 
 		$bouldernumberset = "0";
 		while (@row = $sth->fetchrow_array) {
@@ -1184,10 +1054,7 @@ elsif ($action eq "Report") {
 		push (@bouldernumberset, $bouldernumberset);
 
 		### For Total Set Per Grade ###
-		$sql = "SELECT `Index` FROM `Feedback_Data` WHERE `Grade` = \"$_\" AND`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"B\") ";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `Index` FROM `Feedback_Data` WHERE `Grade` = \"$_\" AND`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"B\");");
 
 		$bouldertotalnumberset = "0";
 		while (@row = $sth->fetchrow_array) {
@@ -1196,10 +1063,7 @@ elsif ($action eq "Report") {
 		push (@bouldertotalnumberset, $bouldertotalnumberset);
 
 		### Make Grade Array ###
-		$sql = "SELECT `Boulder Grade` FROM `Boulder_Grade_Index` WHERE `ID` = \"$_\"";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `Boulder Grade` FROM `Boulder_Grade_Index` WHERE `ID` = \"$_\";");
 
 		while (@row = $sth->fetchrow_array) {
 			push (@bouldergradeindex, @row);
@@ -1209,7 +1073,7 @@ elsif ($action eq "Report") {
 		$grade = $_;
 		@boulderfeedbackgrade = ();
 		foreach (@feedbackquality) {
-			$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Grade` = \"$grade\" AND (`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\') AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"B\")";
+			RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Grade` = \"$grade\" AND (`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\') AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"B\");");
 			$sth = $dbh->prepare($sql);
 			$sth->execute
 			or die "SQL Error: $DBI::errstr\n";
@@ -1242,10 +1106,7 @@ elsif ($action eq "Report") {
 		$grade = $_;
 		@boulderfeedbackgrade = ();
 		foreach (@feedbackquality) {
-			$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Grade` = \"$grade\" AND (`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\') AND (`Type` = \"B\")";
-			$sth = $dbh->prepare($sql);
-			$sth->execute
-			or die "SQL Error: $DBI::errstr\n";
+			RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Grade` = \"$grade\" AND (`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\') AND (`Type` = \"B\");");
 
 			while (@row = $sth->fetchrow_array) {
 				push (@boulderfeedbackgrade, @row);
@@ -1277,10 +1138,7 @@ elsif ($action eq "Report") {
 	########## ROUTE % OF GRADE SET W/ FEEDBACK ###########
 
 	## Query For Grades
-	$sql = "SELECT  `ID` FROM  `Route_Grade_Index` ";
-	$sth = $dbh->prepare($sql);
-	$sth->execute
-	or die "SQL Error: $DBI::errstr\n";
+	RunSQL("SELECT  `ID` FROM  `Route_Grade_Index`;");
 
 	while (@row = $sth->fetchrow_array) {
 		push (@routeindexgrades, @row);
@@ -1290,11 +1148,7 @@ elsif ($action eq "Report") {
 	foreach (@routeindexgrades) {
 
 		### For Number Set Per Grade ###
-		$sql = "SELECT `Index` FROM `Feedback_Data` WHERE `Grade` = \"$_\" AND`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"R\") ";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
-
+		RunSQL("SELECT `Index` FROM `Feedback_Data` WHERE `Grade` = \"$_\" AND`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"R\");");
 		$routenumberset = "0";
 
 		while (@row = $sth->fetchrow_array) {
@@ -1304,11 +1158,7 @@ elsif ($action eq "Report") {
 		push (@routenumberset, $routenumberset);
 
 		### For Total Set Per Grade ###
-		$sql = "SELECT `Index` FROM `Feedback_Data` WHERE `Grade` = \"$_\" AND`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"R\") ";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
-
+		RunSQL("SELECT `Index` FROM `Feedback_Data` WHERE `Grade` = \"$_\" AND`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"R\");");
 		$routetotalnumberset = "0";
 
 		while (@row = $sth->fetchrow_array) {
@@ -1317,10 +1167,7 @@ elsif ($action eq "Report") {
 		push (@routetotalnumberset, $routetotalnumberset);
 
 		### Make Grade Array ###
-		$sql = "SELECT `Route Grade` FROM `Route_Grade_Index` WHERE `ID` = \"$_\"";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `Route Grade` FROM `Route_Grade_Index` WHERE `ID` = \"$_\";");
 
 		while (@row = $sth->fetchrow_array) {
 			push (@routegradeindex, @row);
@@ -1331,10 +1178,7 @@ elsif ($action eq "Report") {
 		@routefeedbackgrade = ();
 		foreach (@feedbackquality) {
 			## Query For Feedback
-			$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Grade` = \"$grade\" AND (`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\') AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"R\")";
-			$sth = $dbh->prepare($sql);
-			$sth->execute
-			or die "SQL Error: $DBI::errstr\n";
+			RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Grade` = \"$grade\" AND (`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\') AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"R\");");
 
 			while (@row = $sth->fetchrow_array) {
 				push (@routefeedbackgrade, @row);
@@ -1366,10 +1210,7 @@ elsif ($action eq "Report") {
 	@routefeedbackgrade = ();
 	foreach (@feedbackquality) {
 		## Query For Feedback
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Grade` = \"$grade\" AND (`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\') AND (`Type` = \"R\")";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Grade` = \"$grade\" AND (`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\') AND (`Type` = \"R\");");
 
 		while (@row = $sth->fetchrow_array) {
 			push (@routefeedbackgrade, @row);
@@ -1404,10 +1245,7 @@ elsif ($action eq "Report") {
 	## BOULDERS
 
 	## Query For Feedback
-	$sql = "SELECT $comments FROM `Feedback_Data` WHERE (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\') AND (`Type` = \"B\")";
-	$sth = $dbh->prepare($sql);
-	$sth->execute
-	or die "SQL Error: $DBI::errstr\n";
+	RunSQL("SELECT $comments FROM `Feedback_Data` WHERE (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\') AND (`Type` = \"B\");");
 
 	while (@row = $sth->fetchrow_array) {
 			$comment = "";
@@ -1442,10 +1280,7 @@ elsif ($action eq "Report") {
 	## ROUTES
 
 	## Query For Feedback
-	$sql = "SELECT $comments FROM `Feedback_Data` WHERE (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\') AND (`Type` = \"R\")";
-	$sth = $dbh->prepare($sql);
-	$sth->execute
-	or die "SQL Error: $DBI::errstr\n";
+	RunSQL("SELECT $comments FROM `Feedback_Data` WHERE (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\') AND (`Type` = \"R\");");
 
 	while (@row = $sth->fetchrow_array) {
 			$comment = "";
@@ -1680,22 +1515,14 @@ elsif ($action eq "team") {
 	### Date Boxes
 	print '<br><br>Review Date: <input type="text" name=reviewdate id="datepicker" autocomplete="off"/><br><br>';
 
-	### Print Available Date Range
-	$sql = "SELECT Date FROM `Feedback_Data` ORDER BY Date DESC LIMIT 1;";
-	$sth = $dbh->prepare($sql);
-	$sth->execute
-	or die "SQL Error: $DBI::errstr\n";
+	RunSQL("SELECT Date FROM `Feedback_Data` ORDER BY Date DESC LIMIT 1;");
 	$newest_date = $sth->fetchrow_array;
 
-	$sql = "SELECT Date FROM `Feedback_Data` ORDER BY Date ASC LIMIT 1;";
-	$sth = $dbh->prepare($sql);
-	$sth->execute
-	or die "SQL Error: $DBI::errstr\n";
+	RunSQL("SELECT Date FROM `Feedback_Data` ORDER BY Date ASC LIMIT 1;");
 	$oldest_date = $sth->fetchrow_array;
 
 	print "Data available from <b>$oldest_date</b> to <b>$newest_date</b>.<br><br>";
 
-	### Print 6 months or year
 	print "Length of Review:<br>";
 	print '<input type="radio" name="duration" value="sixmonths"> 6 Months<br>';
 	print '<input type="radio" name="duration" value="oneyear"> 1 Year<br>';
@@ -1751,11 +1578,8 @@ elsif ($action eq "TeamReport") {
 	## Soft Boulders
 	$softfeedbackcounter = "0";
 	foreach (@softquality) {
-		## Query For Feedback
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Type` = \'B\' AND `Date` BETWEEN \"$sixmonthsdate\" AND  \"$reviewdate\"";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		$quality = $_;
+		RunSQL("SELECT `$quality` FROM `Feedback_Data` WHERE `Type` = \'B\' AND `Date` BETWEEN \"$sixmonthsdate\" AND  \"$reviewdate\";");
 
 		@counter = ();
 		while (@row = $sth->fetchrow_array) {
@@ -1773,11 +1597,8 @@ elsif ($action eq "TeamReport") {
 	## On Boulders
 	$onfeedbackcounter = "0";
 	foreach (@onquality) {
-		## Query For Feedback
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Type` = \'B\' AND `Date` BETWEEN \"$sixmonthsdate\" AND  \"$reviewdate\"";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		$quality = $_;
+		RunSQL("SELECT `$quality` FROM `Feedback_Data` WHERE `Type` = \'B\' AND `Date` BETWEEN \"$sixmonthsdate\" AND  \"$reviewdate\";");
 
 		while (@row = $sth->fetchrow_array) {
 			push (@counter, @row);
@@ -1794,11 +1615,8 @@ elsif ($action eq "TeamReport") {
 	## Hard Boulders
 	$hardfeedbackcounter = "0";
 	foreach (@hardquality) {
-		## Query For Feedback
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Type` = \'B\' AND `Date` BETWEEN \"$sixmonthsdate\" AND  \"$reviewdate\"";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		$quality = $_;
+		RunSQL("SELECT `$quality` FROM `Feedback_Data` WHERE `Type` = \'B\' AND `Date` BETWEEN \"$sixmonthsdate\" AND  \"$reviewdate\";");
 
 		@counter = ();
 		while (@row = $sth->fetchrow_array) {
@@ -1825,11 +1643,8 @@ elsif ($action eq "TeamReport") {
 	## Soft Routes
 	$softfeedbackcounter = "0";
 	foreach (@softquality) {
-		## Query For Feedback
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Type` = \'R\' AND `Date` BETWEEN \"$sixmonthsdate\" AND  \"$reviewdate\"";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		$quality = $_;
+		RunSQL("SELECT `$quality` FROM `Feedback_Data` WHERE `Type` = \'R\' AND `Date` BETWEEN \"$sixmonthsdate\" AND  \"$reviewdate\";");
 
 		@counter = ();
 		while (@row = $sth->fetchrow_array) {
@@ -1847,11 +1662,8 @@ elsif ($action eq "TeamReport") {
 	## On Routes
 	$onfeedbackcounter = "0";
 	foreach (@onquality) {
-		## Query For Feedback
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Type` = \'R\' AND `Date` BETWEEN  \"$sixmonthsdate\" AND  \"$reviewdate\"";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		$quality = $_;
+		RunSQL("SELECT `$quality` FROM `Feedback_Data` WHERE `Type` = \'R\' AND `Date` BETWEEN  \"$sixmonthsdate\" AND  \"$reviewdate\";");
 
 		while (@row = $sth->fetchrow_array) {
 			push (@counter, @row);
@@ -1868,11 +1680,8 @@ elsif ($action eq "TeamReport") {
 	## Hard Route
 	$hardfeedbackcounter = "0";
 	foreach (@hardquality) {
-		## SQL Query For Feedback
-		$sql = "SELECT `$_` FROM `Feedback_Data` WHERE `Type` = \'R\' AND`Date` BETWEEN  \"$sixmonthsdate\" AND  \"$reviewdate\"";
-		$sth = $dbh->prepare($sql);
-		$sth->execute
-		or die "SQL Error: $DBI::errstr\n";
+		$quality = $_;
+		RunSQL("SELECT `$quality` FROM `Feedback_Data` WHERE `Type` = \'R\' AND`Date` BETWEEN  \"$sixmonthsdate\" AND  \"$reviewdate\";");
 
 		@counter = ();
 		while (@row = $sth->fetchrow_array) {
@@ -1906,49 +1715,40 @@ elsif ($action eq "TeamReport") {
 	$downboulder = "0";
 
 	###Routes that got upgraded
-	$sql = "SELECT `OriginalGrade` FROM `Feedback_Data` WHERE `Type` = \'R\' AND `OriginalGrade` < `Grade` AND `Date` BETWEEN  \"$sixmonthsdate\" AND  \"$reviewdate\"";
-	$sth = $dbh->prepare($sql);
-	$sth->execute
-	or die "SQL Error: $DBI::errstr\n";
+	RunSQL("SELECT `OriginalGrade` FROM `Feedback_Data` WHERE `Type` = \'R\' AND `OriginalGrade` < `Grade` AND `Date` BETWEEN  \"$sixmonthsdate\" AND  \"$reviewdate\";");
 
 	while (@row = $sth->fetchrow_array) {
-		if (@row[0] != "") {
+		if ($row[0] != "") {
 			++$uproutes;
 		}
 	}
 
 	###Routes that got downgraded
-	$sql = "SELECT `OriginalGrade` FROM `Feedback_Data` WHERE `Type` = \'R\' AND `OriginalGrade` > `Grade` AND `Date` BETWEEN  \"$sixmonthsdate\" AND  \"$reviewdate\"";
+	RunSQL("SELECT `OriginalGrade` FROM `Feedback_Data` WHERE `Type` = \'R\' AND `OriginalGrade` > `Grade` AND `Date` BETWEEN  \"$sixmonthsdate\" AND  \"$reviewdate\";");
 	$sth = $dbh->prepare($sql);
 	$sth->execute
 	or die "SQL Error: $DBI::errstr\n";
 
 	while (@row = $sth->fetchrow_array) {
-		if (@row[0] != "") {
+		if ($row[0] != "") {
 			++$downroutes;
 		}
 	}
 
 	###Boulder that got upgraded
-	$sql = "SELECT `OriginalGrade` FROM `Feedback_Data` WHERE `Type` = \'B\' AND `OriginalGrade` < `Grade` AND `Date` BETWEEN  \"$sixmonthsdate\" AND  \"$reviewdate\"";
-	$sth = $dbh->prepare($sql);
-	$sth->execute
-	or die "SQL Error: $DBI::errstr\n";
+	RunSQL("SELECT `OriginalGrade` FROM `Feedback_Data` WHERE `Type` = \'B\' AND `OriginalGrade` < `Grade` AND `Date` BETWEEN  \"$sixmonthsdate\" AND  \"$reviewdate\";");
 
 	while (@row = $sth->fetchrow_array) {
-		if (@row[0] != "") {
+		if ($row[0] != "") {
 			++$upboulder;
 		}
 	}
 
 	###Boulder that got downgraded
-	$sql = "SELECT `OriginalGrade` FROM `Feedback_Data` WHERE `Type` = \'B\' AND `OriginalGrade` > `Grade` AND `Date` BETWEEN  \"$sixmonthsdate\" AND  \"$reviewdate\"";
-	$sth = $dbh->prepare($sql);
-	$sth->execute
-	or die "SQL Error: $DBI::errstr\n";
+	RunSQL("SELECT `OriginalGrade` FROM `Feedback_Data` WHERE `Type` = \'B\' AND `OriginalGrade` > `Grade` AND `Date` BETWEEN  \"$sixmonthsdate\" AND  \"$reviewdate\";");
 
 	while (@row = $sth->fetchrow_array) {
-		if (@row[0] != "") {
+		if ($SSrow[0] != "") {
 			++$downboulder;
 		}
 	}
