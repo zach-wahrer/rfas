@@ -40,4 +40,12 @@ sub PrintSetterBox {
 	print "</select>";
 }
 
+sub PrintDataAvailableBox {
+    RunSQL("SELECT Date FROM `Feedback_Data` ORDER BY Date DESC LIMIT 1;");
+    $newest_date = $sth->fetchrow_array;
+    RunSQL("SELECT Date FROM `Feedback_Data` ORDER BY Date ASC LIMIT 1;");
+    $oldest_date = $sth->fetchrow_array;
+    print "Data available from <b>$oldest_date</b> to <b>$newest_date</b>.<br><br>";
+}
+
 1;

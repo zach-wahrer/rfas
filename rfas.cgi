@@ -297,19 +297,12 @@ elsif ($action eq "print") {
 	print "Print Report<br><br>";
 	print "<form action=\"rfas.cgi\" name=\"PrintReportForm\" method=\"GET\">\n";
 
-	### Print Setter Name Box
-
-
 	print "Setter: \n";
 	PrintSetterBox('setter');
 
 	PrintDateBox('Review');
 
-	RunSQL("SELECT Date FROM `Feedback_Data` ORDER BY Date DESC LIMIT 1;");
-	$newest_date = $sth->fetchrow_array;
-	RunSQL("SELECT Date FROM `Feedback_Data` ORDER BY Date ASC LIMIT 1;");
-	$oldest_date = $sth->fetchrow_array;
-	print "Data available from <b>$oldest_date</b> to <b>$newest_date</b>.<br><br>";
+	PrintDataAvailableBox();
 
 	print "Length of Review:<br>";
 	print '<input type="radio" name="duration" value="sixmonths"> 6 Months<br>';
@@ -1409,13 +1402,7 @@ elsif ($action eq "team") {
 
 	PrintDateBox('Review');
 
-	RunSQL("SELECT Date FROM `Feedback_Data` ORDER BY Date DESC LIMIT 1;");
-	$newest_date = $sth->fetchrow_array;
-
-	RunSQL("SELECT Date FROM `Feedback_Data` ORDER BY Date ASC LIMIT 1;");
-	$oldest_date = $sth->fetchrow_array;
-
-	print "Data available from <b>$oldest_date</b> to <b>$newest_date</b>.<br><br>";
+	PrintDataAvailableBox();
 
 	print "Length of Review:<br>";
 	print '<input type="radio" name="duration" value="sixmonths"> 6 Months<br>';
