@@ -12,12 +12,15 @@ RUN ln -s /etc/apache2/mods-available/cgi.load /etc/apache2/mods-enabled/
 COPY includes/index.html /var/www/html/index.html
 COPY grapher.cgi /usr/lib/cgi-bin/grapher.cgi
 COPY rfas.cgi /usr/lib/cgi-bin/rfas.cgi
-COPY includes/rfas_config.pl /usr/config/rfas_config.pl
+
+WORKDIR /usr/rfas
+COPY includes/rfas_functions.pl /usr/rfas/rfas_functions.pl
+COPY includes/rfas_config.pl /usr/rfas/rfas_config.pl
 COPY includes/website.conf /etc/apache2/sites-available/000-default.conf
 
-WORKDIR /usr/setup
-COPY includes/db-setup.pl /usr/setup/db-setup.pl
-COPY includes/route_feedback.sql /usr/setup/route_feedback.sql
+
+COPY includes/db-setup.pl /usr/rfas/db-setup.pl
+COPY includes/route_feedback.sql /usr/rfas/route_feedback.sql
 
 RUN chmod 755 /usr/lib/cgi-bin/grapher.cgi
 RUN chmod 755 /usr/lib/cgi-bin/rfas.cgi
