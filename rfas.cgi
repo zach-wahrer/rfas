@@ -24,11 +24,24 @@ die "Couldn't interpret the configuration file.\nError: $@\n" if $@;
 $dbh = DBI->connect("dbi:mysql:route_feedback;host=$mysql_host", $mysql_username, $mysql_password)
 or die "Connection Error: $DBI::errstr\n";
 
-### Define SQL Function
+### Define Subroutines
 sub RunSQL {
 	$sth = $dbh->prepare(@_);
 	$sth->execute
 	or die "SQL Error: $DBI::errstr\n";
+}
+
+sub PrintDateBox {
+	print "<br><br>@_ Date: <input type='text' name=reviewdate id='datepicker' autocomplete='off'/><br><br>";
+}
+
+sub PrintFeedbackBoxes {
+	$type = $_;
+	print "$type: \n";
+	foreach (1..8) {
+		print "<input type='text' maxlength='3' size='2' name='$type$_'>";
+	}
+	print "<p>"
 }
 
 ### Get Variables from HTML Line Input ###
@@ -95,13 +108,10 @@ elsif ($action eq "add") {
 				print "<option value=\"$_\">$_</option>\n";
 			}
 		}
-
 		print "</select>";
-
 	}
 
-	### Date Box
-	print '<br><br><br>Date: <input type="text" name=date id="datepicker" /></p>';
+	PrintDateBox();
 
 	### Print Route Rating Boxes
 	RunSQL("SELECT `Route Grade` FROM `Route_Grade_Index`");
@@ -152,37 +162,11 @@ elsif ($action eq "add") {
 	###Feedback Matrix
 	print "<br><br><br>Feedback:<p>\n";
 
-	print "Soft: \n";
-	print '<input type="text" maxlength="3" size="2" name="Soft1">';
-	print '<input type="text" maxlength="3" size="2" name="Soft2">';
-	print '<input type="text" maxlength="3" size="2" name="Soft3">';
-	print '<input type="text" maxlength="3" size="2" name="Soft4">';
-	print '<input type="text" maxlength="3" size="2" name="Soft5">';
-	print '<input type="text" maxlength="3" size="2" name="Soft6">';
-	print '<input type="text" maxlength="3" size="2" name="Soft7">';
-	print '<input type="text" maxlength="3" size="2" name="Soft8">';
+	foreach('Soft', 'On', 'Hard') {
+		PrintFeedbackBoxes($_);
+	}
 
-	print "<p>On: \n";
-	print '<input type="text" maxlength="3" size="2" name="On1">';
-	print '<input type="text" maxlength="3" size="2" name="On2">';
-	print '<input type="text" maxlength="3" size="2" name="On3">';
-	print '<input type="text" maxlength="3" size="2" name="On4">';
-	print '<input type="text" maxlength="3" size="2" name="On5">';
-	print '<input type="text" maxlength="3" size="2" name="On6">';
-	print '<input type="text" maxlength="3" size="2" name="On7">';
-	print '<input type="text" maxlength="3" size="2" name="On8">';
-
-	print "<p>Hard: \n";
-	print '<input type="text" maxlength="3" size="2" name="Hard1">';
-	print '<input type="text" maxlength="3" size="2" name="Hard2">';
-	print '<input type="text" maxlength="3" size="2" name="Hard3">';
-	print '<input type="text" maxlength="3" size="2" name="Hard4">';
-	print '<input type="text" maxlength="3" size="2" name="Hard5">';
-	print '<input type="text" maxlength="3" size="2" name="Hard6">';
-	print '<input type="text" maxlength="3" size="2" name="Hard7">';
-	print '<input type="text" maxlength="3" size="2" name="Hard8">';
-
-	print '<br><br>Comment 1: <input type="text" maxlength="100" size="50" name="Comment1"><br>';
+	print 'Comment 1: <input type="text" maxlength="100" size="50" name="Comment1"><br>';
 	print 'Comment 2: <input type="text" maxlength="100" size="50" name="Comment2"><br>';
 	print 'Comment 3: <input type="text" maxlength="100" size="50" name="Comment3"><br>';
 	print 'Comment 4: <input type="text" maxlength="100" size="50" name="Comment4"><br>';
@@ -380,8 +364,7 @@ elsif ($action eq "print") {
 	}
 	print "</select>";
 
-	### Date Boxes
-	print '<br><br>Review Date: <input type="text" name=reviewdate id="datepicker" autocomplete="off"/><br><br>';
+	PrintDateBox('Review');
 
 	RunSQL("SELECT Date FROM `Feedback_Data` ORDER BY Date DESC LIMIT 1;");
 	$newest_date = $sth->fetchrow_array;
@@ -1489,8 +1472,7 @@ elsif ($action eq "team") {
 	print "Print Team Report<br>";
 	print "<form action=\"rfas.cgi\" name=\"PrintTeamReportForm\" method=\"GET\">\n";
 
-	### Date Boxes
-	print '<br><br>Review Date: <input type="text" name=reviewdate id="datepicker" autocomplete="off"/><br><br>';
+	PrintDateBox('Review');
 
 	RunSQL("SELECT Date FROM `Feedback_Data` ORDER BY Date DESC LIMIT 1;");
 	$newest_date = $sth->fetchrow_array;
