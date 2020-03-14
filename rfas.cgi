@@ -51,6 +51,21 @@ sub PrintSubmit {
 	print "</form>";
 }
 
+sub PrintSetterBox {
+	print "<select name=\"$_\">\n
+			<option value=\"Blank\"> </option>\n";
+	RunSQL("SELECT `Name` FROM `Setter_Index`");
+	while (@row = $sth->fetchrow_array) {
+		foreach (@row) {
+			$inactivesetter = m\#\;
+			if (!$inactivesetter) {
+				print "<option value=\"$_\">$_</option>\n";
+			}
+		}
+	}
+	print "</select>";
+}
+
 ### Get Variables from HTML Line Input ###
 $q = CGI->new();
 $action = $q->param('action');
@@ -99,23 +114,9 @@ elsif ($action eq "add") {
 	print "<form action=\"rfas.cgi\" name=\"AddFeedbackForm\" method=\"GET\">\n";
 
 	### Print Setter Name Boxes ###
-	RunSQL("SELECT `Name` FROM `Setter_Index`");
-
-	while (@row = $sth->fetchrow_array) {
-		push (@setternames, @row);
-	}
-
 	print "Setter: \n";
 	foreach ('setter1', 'setter2', 'setter3') {
-		print "<select name=\"$_\">\n
-				<option value=\"Blank\"> </option>\n";
-		foreach (@setternames) {
-			$inactivesetter = m\#\;
-			if (!$inactivesetter) {
-				print "<option value=\"$_\">$_</option>\n";
-			}
-		}
-		print "</select>";
+		PrintSetterBox($_)
 	}
 
 	PrintDateBox();
@@ -336,21 +337,10 @@ elsif ($action eq "print") {
 	print "<form action=\"rfas.cgi\" name=\"PrintReportForm\" method=\"GET\">\n";
 
 	### Print Setter Name Box
-	RunSQL("SELECT `Name` FROM `Setter_Index`");
-	while (@row = $sth->fetchrow_array) {
-		push (@setternames, @row);
-	}
+
 
 	print "Setter: \n";
-	print "<select name=\"setter\">\n
-			<option value=\"Blank\"> </option>\n";
-	foreach (@setternames) {
-		$oldsetter = m\#\;
-		if (!$oldsetter) {
-			print "<option value=\"$_\">$_</option>\n";
-		}
-	}
-	print "</select>";
+	PrintSetterBox('setter');
 
 	PrintDateBox('Review');
 
