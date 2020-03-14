@@ -228,9 +228,6 @@ elsif ($action eq "Submit") {
 	$Comment7 = $q->param('Comment7');
 	$Comment8 = $q->param('Comment8');
 
-	@soft_on_hard = ($Soft1, $Soft2, $Soft3, $Soft4, $Soft5, $Soft6, $Soft7, $Soft8,
-					$On1, $On2, $On3, $On4, $On5, $On6, $On7, $On8,
-					$Hard1, $Hard2, $Hard3, $Hard4, $Hard5, $Hard6, $Hard7, $Hard8);
 
 	if ($setter1 eq "Blank") {
 		die "You have to enter a First Setter!";
@@ -268,21 +265,16 @@ elsif ($action eq "Submit") {
 		die "You have entered an incorrectly formated date."
 	}
 
-	###### Route / Boulder Grades ######
+	###### ERROR CHECKING ######
 	if ($routegrade eq "Blank" and $routeoriginalgrade eq "Blank" and $bouldergrade eq "Blank" and $boulderoriginalgrade eq "Blank") {
 		die "You have to enter a Grade!";
 	}
-
-	### Die if an original grade is entered without a grade
 	if ($routeoriginalgrade ne "Blank" and $routegrade eq "Blank") {
 		die "You have to enter a Route Grade with an Original Grade!";
 	}
-
 	if ($boulderoriginalgrade ne "Blank" and $bouldergrade eq "Blank") {
 		die "You have to enter a Bouldering Grade with an Original Grade!";
 	}
-
-	### Die if route grade and boulder grade are entered
 	if ($bouldergrade ne "Blank" and $routegrade ne "Blank") {
 		die "You cannot enter both Bouldering and Route grades at the same time.";
 	}
@@ -294,7 +286,6 @@ elsif ($action eq "Submit") {
 		$type = "R";
 		$grade = $routegrade;
 	}
-
 	if ($routeoriginalgrade ne "Blank") {
 		RunSQL("SELECT `ID` FROM `Route_Grade_Index` WHERE `Route Grade` = \"$routeoriginalgrade\"");
 		$routeoriginalgrade = $sth->fetchrow_array;
@@ -308,7 +299,6 @@ elsif ($action eq "Submit") {
 		$type = "B";
 		$grade = $bouldergrade;
 	}
-
 	if ($boulderoriginalgrade ne "Blank") {
 		RunSQL("SELECT `ID` FROM `Boulder_Grade_Index` WHERE `Boulder Grade` = \"$boulderoriginalgrade\"");
 		$boulderoriginalgrade = $sth->fetchrow_array;
@@ -316,7 +306,9 @@ elsif ($action eq "Submit") {
 	}
 
 	### Make sure Soft/On/Hard + Quality ratings aren't <5 or less than 0 or a non-number ###
-	foreach (@soft_on_hard) {
+	foreach ($Soft1, $Soft2, $Soft3, $Soft4, $Soft5, $Soft6, $Soft7, $Soft8,
+					$On1, $On2, $On3, $On4, $On5, $On6, $On7, $On8,
+					$Hard1, $Hard2, $Hard3, $Hard4, $Hard5, $Hard6, $Hard7, $Hard8) {
 		if ($_ ne "x" and $_ ne "" and ! looks_like_number $_) {
 			die "You entered an improperly formatted feedback score.";
 		}
