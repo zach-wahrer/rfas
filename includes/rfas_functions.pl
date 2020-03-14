@@ -48,4 +48,10 @@ sub PrintDataAvailableBox {
     print "Data available from <b>$oldest_date</b> to <b>$newest_date</b>.<br><br>";
 }
 
+sub PrintLengthOfReview {
+    print "Length of Review:<br>";
+    print '<input type="radio" name="duration" value="sixmonths"> 6 Months<br>';
+    print '<input type="radio" name="duration" value="oneyear"> 1 Year<br>';
+}
+
 1;

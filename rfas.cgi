@@ -304,9 +304,7 @@ elsif ($action eq "print") {
 
 	PrintDataAvailableBox();
 
-	print "Length of Review:<br>";
-	print '<input type="radio" name="duration" value="sixmonths"> 6 Months<br>';
-	print '<input type="radio" name="duration" value="oneyear"> 1 Year<br>';
+	PrintLengthOfReview();
 
 	PrintSubmit('Report');
 
@@ -1404,9 +1402,7 @@ elsif ($action eq "team") {
 
 	PrintDataAvailableBox();
 
-	print "Length of Review:<br>";
-	print '<input type="radio" name="duration" value="sixmonths"> 6 Months<br>';
-	print '<input type="radio" name="duration" value="oneyear"> 1 Year<br>';
+	PrintLengthOfReview();
 
 	PrintSubmit('TeamReport');
 
