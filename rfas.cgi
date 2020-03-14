@@ -86,36 +86,19 @@ elsif ($action eq "add") {
 	}
 
 	print "Setter: \n";
-	print "<select name=\"setter1\">\n
-			<option value=\"Blank\"> </option>\n";
-	foreach (@setternames) {
-		## Don't print if setter is inactive
-		$oldsetter = m\#\;
-		if (!$oldsetter) {
-			print "<option value=\"$_\">$_</option>\n";
+	foreach ('setter1', 'setter2', 'setter3') {
+		print "<select name=\"$_\">\n
+				<option value=\"Blank\"> </option>\n";
+		foreach (@setternames) {
+			$inactivesetter = m\#\;
+			if (!$inactivesetter) {
+				print "<option value=\"$_\">$_</option>\n";
+			}
 		}
-	}
-	print "</select>";
 
-	print "<select name=\"setter2\">
-			<option value=\"Blank\"> </option>\n";
-	foreach (@setternames) {
-		$oldsetter = m\#\;
-		if (!$oldsetter) {
-			print "<option value=\"$_\">$_</option>\n";
-		}
-	}
-	print "</select>";
+		print "</select>";
 
-	print "<select name=\"setter3\">\n
-			<option value=\"Blank\"> </option>\n";
-	foreach (@setternames) {
-		$oldsetter = m\#\;
-		if (!$oldsetter) {
-			print "<option value=\"$_\">$_</option>\n";
-		}
 	}
-	print "</select>\n";
 
 	### Date Box
 	print '<br><br><br>Date: <input type="text" name=date id="datepicker" /></p>';
