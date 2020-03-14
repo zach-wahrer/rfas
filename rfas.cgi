@@ -44,6 +44,13 @@ sub PrintFeedbackBoxes {
 	print "<p>"
 }
 
+sub PrintSubmit {
+	print "<br><br><br>";
+	print submit ('action', "@_");
+	print reset;
+	print "</form>";
+}
+
 ### Get Variables from HTML Line Input ###
 $q = CGI->new();
 $action = $q->param('action');
@@ -166,20 +173,11 @@ elsif ($action eq "add") {
 		PrintFeedbackBoxes($_);
 	}
 
-	print 'Comment 1: <input type="text" maxlength="100" size="50" name="Comment1"><br>';
-	print 'Comment 2: <input type="text" maxlength="100" size="50" name="Comment2"><br>';
-	print 'Comment 3: <input type="text" maxlength="100" size="50" name="Comment3"><br>';
-	print 'Comment 4: <input type="text" maxlength="100" size="50" name="Comment4"><br>';
-	print 'Comment 5: <input type="text" maxlength="100" size="50" name="Comment5"><br>';
-	print 'Comment 6: <input type="text" maxlength="100" size="50" name="Comment6"><br>';
-	print 'Comment 7: <input type="text" maxlength="100" size="50" name="Comment7"><br>';
-	print 'Comment 8: <input type="text" maxlength="100" size="50" name="Comment8"><br>';
+	foreach(1..8) {
+		print "Comment $_: <input type='text' maxlength='100' size='50' name='Comment$_'><br>";
+	}
 
-	###Make submit/reset buttons and finish form
-	print "<br><br><br>";
-	print submit ('action', 'Submit');
-	print reset;
-	print "</form>";
+	PrintSubmit('Submit');
 
 }
 
@@ -234,8 +232,6 @@ elsif ($action eq "Submit") {
 					$On1, $On2, $On3, $On4, $On5, $On6, $On7, $On8,
 					$Hard1, $Hard2, $Hard3, $Hard4, $Hard5, $Hard6, $Hard7, $Hard8);
 
-	### Get IDs for Variables ###
-	#### Setter Names ####
 	if ($setter1 eq "Blank") {
 		die "You have to enter a First Setter!";
 	}
@@ -376,11 +372,7 @@ elsif ($action eq "print") {
 	print '<input type="radio" name="duration" value="sixmonths"> 6 Months<br>';
 	print '<input type="radio" name="duration" value="oneyear"> 1 Year<br>';
 
-	### Make submit/reset buttons and finish form
-	print "<br><br><br>";
-	print submit ('action', 'Report');
-	print reset;
-	print "</form>";
+	PrintSubmit('Report');
 
 }
 
@@ -1486,11 +1478,7 @@ elsif ($action eq "team") {
 	print '<input type="radio" name="duration" value="sixmonths"> 6 Months<br>';
 	print '<input type="radio" name="duration" value="oneyear"> 1 Year<br>';
 
-	###Make submit/reset buttons and finish form
-	print "<br><br><br>";
-	print submit ('action', 'TeamReport');
-	print reset;
-	print "</form>";
+	PrintSubmit('TeamReport');
 
 }
 
