@@ -57,10 +57,11 @@ Note: If you ever need to remove a setter from RFAS, don't delete them from the 
 
 ### Installing
 1. Copy the `includes/rfas_config.pl` to a secure location on  your machine. Edit it and change the variables to reflect your MySQL username, password, and sever address.
-2. Open `rfas.cgi`, `grapher.cgi`, and `includes/db-setup.pl` and edit lines 16, 17, and 10, repectively, `open CONFIG, "/usr/config/rfas_config.pl"`, to point to your config you copied in the previous step.
+2. Open `rfas.cgi`, `grapher.cgi`, and `includes/db-setup.pl` and edit lines 16, 17, and 10, respectively, `open CONFIG, "/usr/config/rfas_config.pl"`, to point to your config you copied in the previous step.
 3. Now, copy `rfas.cgi` and `grapher.cgi` into your web server's `cgi-bin`. Make sure the file permissions are set to allow execution of the files.
 4. DO NOT leave `rfas.cgi` or `grapher.cgi` without some type of password protection (utilizing a `.htaccess` file is the easiest). The program was never intended to be run on a publicly available web sever, and some of the design decisions reflect that, ie. no access control.
-5. Navigate to your web server via a browser and open `rfas.cgi`. If you did everything correctly, you should see "What would you like to do?"
+5. Copy `includes/rfas_functions.pl` to a secure location on your machine. Open `rfas.cgi` and update line 13, `require '/usr/rfas/rfas_functions.pl';`, to point to this file.
+6. Navigate to your web server via a browser and open `rfas.cgi`. If you did everything correctly, you should see "What would you like to do?"
 
 ### Built With
 ---
