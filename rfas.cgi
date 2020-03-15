@@ -369,7 +369,6 @@ elsif ($action eq "Report") {
 	############## COMBINED TOTALS #################
 
 	foreach (@softquality) {
-
 		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\");");
 		@softqualityratings = ();
 		while (@row = $sth->fetchrow_array) {
@@ -393,16 +392,13 @@ elsif ($action eq "Report") {
 
 
 	foreach (@onquality) {
-
 		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\");");
 		@onqualityratings = ();
 		while (@row = $sth->fetchrow_array) {
 			push (@onqualityratings, @row);
 		}
 		push (@onratings, @onqualityratings);
-	}
 
-	foreach (@onquality) {
 		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\';");
 		@gymonqualityratings = ();
 		while (@row = $sth->fetchrow_array) {
@@ -420,20 +416,13 @@ elsif ($action eq "Report") {
 
 	foreach (@hardquality) {
 		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\");");
-
-		#Zero Out Array for Each pass
 		@hardqualityratings = ();
 		while (@row = $sth->fetchrow_array) {
 			push (@hardqualityratings, @row);
 		}
 			push (@hardratings, @hardqualityratings);
-	}
 
-	### GYM Hard Feedback
-	foreach (@hardquality) {
 		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\'");
-
-		#Zero Out Array for Each pass
 		@gymhardqualityratings = ();
 		while (@row = $sth->fetchrow_array) {
 			push (@gymhardqualityratings, @row);
@@ -441,60 +430,19 @@ elsif ($action eq "Report") {
 		push (@gymhardratings, @gymhardqualityratings);
 	}
 
-	### Get Average for Hard Feedback
-	foreach (@hardratings) {
-		if ($_ ne "" and $_ ne "x") {
-			$hardtotal = $hardtotal + $_;
-			++$hardcounter;
-		}
-	}
-	if ($hardcounter) {
-		$hardaverage = $hardtotal / $hardcounter;
-	}
+	$hardaverage = FeedbackAverage(@hardratings);
 	push (@totalaverage, @hardratings);
 
-	### Get Average for GYM HardFeedback
-	foreach (@gymhardratings) {
-		if ($_ ne "" and $_ ne "x") {
-			$gymhardtotal = $gymhardtotal + $_;
-			++$gymhardcounter;
-		}
-	}
-	if ($gymhardcounter) {
-		$gymhardaverage = $gymhardtotal / $gymhardcounter;
-	}
+	$gymhardaverage = FeedbackAverage(@gymhardratings);
 	push (@gymtotalaverage, @gymhardratings);
 
+	$totalaverage = FeedbackAverage(@totalaverage);
+	$gymtotalaverage = FeedbackAverage(@gymtotalaverage);
 
-	### Get Total Average for Feedback
-	foreach (@totalaverage) {
-		if ($_ ne "" and $_ ne "x") {
-			$totaltotal = $totaltotal + $_;
-			++$totalcounter;
-		}
-	}
-	if ($totalcounter) {
-		$totalaverage = $totaltotal / $totalcounter;
-	}
-
-	## Round the Numbers
 	$softaveragefeedback = sprintf "%.2f", $softaverage;
 	$onaveragefeedback = sprintf "%.2f", $onaverage;
 	$hardaveragefeedback = sprintf "%.2f", $hardaverage;
 	$totalaveragefeedback = sprintf "%.2f", $totalaverage;
-
-	### Get Total Average for GYM Feedback
-	foreach (@gymtotalaverage) {
-		if ($_ ne "" and $_ ne "x") {
-			$gymtotaltotal = $gymtotaltotal + $_;
-			++$gymtotalcounter;
-		}
-	}
-	if ($gymtotalcounter) {
-		$gymtotalaverage = $gymtotaltotal / $gymtotalcounter;
-	}
-
-	##Round the Numbers
 	$gymsoftaveragefeedback = sprintf "%.2f", $gymsoftaverage;
 	$gymonaveragefeedback = sprintf "%.2f", $gymonaverage;
 	$gymhardaveragefeedback = sprintf "%.2f", $gymhardaverage;
