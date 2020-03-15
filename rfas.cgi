@@ -497,23 +497,15 @@ elsif ($action eq "Report") {
 	push (@gymbouldertotalaverage, @gymboulderonratings);
 
 
-	### Hard Feedback Average ###
-
-	### Put All Hard Feedback into An Array
 	foreach (@hardquality) {
 		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"B\")");
-
-		#Zero Out Array for Each pass
 		@boulderhardqualityratings = ();
 		while (@row = $sth->fetchrow_array) {
 			push (@boulderhardqualityratings, @row);
 		}
 			push (@boulderhardratings, @boulderhardqualityratings);
 
-		## GYM Feedback
 		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"B\")");
-
-		#Zero Out Array for Each pass
 		@gymboulderhardqualityratings = ();
 		while (@row = $sth->fetchrow_array) {
 			push (@gymboulderhardqualityratings, @row);
@@ -521,60 +513,19 @@ elsif ($action eq "Report") {
 		push (@gymboulderhardratings, @gymboulderhardqualityratings);
 	}
 
-	### Get Average for HardFeedback
-	foreach (@boulderhardratings) {
-		if ($_ ne "" and $_ ne "x") {
-			$boulderhardtotal = $boulderhardtotal + $_;
-			++$boulderhardcounter;
-		}
-	}
-	if ($boulderhardcounter) {
-		$boulderhardaverage = $boulderhardtotal / $boulderhardcounter;
-	}
+	$boulderhardaverage = FeedbackAverage(@boulderhardratings);
 	push (@bouldertotalaverage, @boulderhardratings);
 
-	### Get GYM Average for HardFeedback
-	foreach (@gymboulderhardratings) {
-		if ($_ ne "" and $_ ne "x") {
-			$gymboulderhardtotal = $gymboulderhardtotal + $_;
-			++$gymboulderhardcounter;
-		}
-	}
-
-	if ($gymboulderhardcounter) {
-		$gymboulderhardaverage = $gymboulderhardtotal / $gymboulderhardcounter;
-	}
+	$gymboulderhardaverage = FeedbackAverage(@gymboulderhardratings);
 	push (@gymbouldertotalaverage, @gymboulderhardratings);
 
-	### Get Total Average for Feedback
-	foreach (@bouldertotalaverage) {
-		if ($_ ne "" and $_ ne "x") {
-			$bouldertotaltotal = $bouldertotaltotal + $_;
-			++$bouldertotalcounter;
-		}
-	}
-	if ($bouldertotalcounter) {
-		$bouldertotalaverage = $bouldertotaltotal / $bouldertotalcounter;
-	}
+	$bouldertotalaverage = FeedbackAverage(@bouldertotalaverage);
+	$gymbouldertotalaverage = FeedbackAverage(@gymbouldertotalaverage);
 
-	##Round the Numbers
 	$bouldersoftaveragefeedback = sprintf "%.2f", $bouldersoftaverage;
 	$boulderonaveragefeedback = sprintf "%.2f", $boulderonaverage;
 	$boulderhardaveragefeedback = sprintf "%.2f", $boulderhardaverage;
 	$bouldertotalaveragefeedback = sprintf "%.2f", $bouldertotalaverage;
-
-	### GYM Get Total Average for Feedback
-	foreach (@gymbouldertotalaverage) {
-		if ($_ ne "" and $_ ne "x") {
-			$gymbouldertotaltotal = $gymbouldertotaltotal + $_;
-			++$gymbouldertotalcounter;
-		}
-	}
-	if ($gymbouldertotalcounter) {
-		$gymbouldertotalaverage = $gymbouldertotaltotal / $gymbouldertotalcounter;
-	}
-
-	##Round the GYM Numbers
 	$gymbouldersoftaveragefeedback = sprintf "%.2f", $gymbouldersoftaverage;
 	$gymboulderonaveragefeedback = sprintf "%.2f", $gymboulderonaverage;
 	$gymboulderhardaveragefeedback = sprintf "%.2f", $gymboulderhardaverage;
@@ -583,23 +534,15 @@ elsif ($action eq "Report") {
 
 	################## ROUTE AVERAGES ###############
 
-	### Soft Feedback Average ###
-
-	### Put All Soft Feedback into An Array
 	foreach (@softquality) {
 		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"R\")");
-
-		#Zero Out Array for Each pass
 		@routesoftqualityratings = ();
 		while (@row = $sth->fetchrow_array) {
 			push (@routesoftqualityratings, @row);
 		}
 		push (@routesoftratings, @routesoftqualityratings);
 
-		## GYM Feedback
 		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"R\")");
-
-		#Zero Out Array for Each pass
 		@gymroutesoftqualityratings = ();
 		while (@row = $sth->fetchrow_array) {
 			push (@gymroutesoftqualityratings, @row);
@@ -607,97 +550,45 @@ elsif ($action eq "Report") {
 		push (@gymroutesoftratings, @gymroutesoftqualityratings);
 	}
 
-	### Get Average for Soft Feedback
-	foreach (@routesoftratings) {
-		if ($_ ne "" and $_ ne "x") {
-			$routesofttotal = $routesofttotal + $_;
-			++$routesoftcounter;
-		}
-	}
-	if ($routesoftcounter) {
-		$routesoftaverage = $routesofttotal / $routesoftcounter;
-	}
+	$routesoftaverage = FeedbackAverage(@routesoftratings);
 	push (@routetotalaverage, @routesoftratings);
 
-	### GYM Get Average for Soft Feedback
-	foreach (@gymroutesoftratings) {
-		if ($_ ne "" and $_ ne "x") {
-			$gymroutesofttotal = $gymroutesofttotal + $_;
-			++$gymroutesoftcounter;
-		}
-	}
-	if ($gymroutesoftcounter) {
-		$gymroutesoftaverage = $gymroutesofttotal / $gymroutesoftcounter;
-	}
+	$gymroutesoftaverage = FeedbackAverage(@gymroutesoftratings);
 	push (@gymroutetotalaverage, @gymroutesoftratings);
 
 
-	### On Feedback Average ###
-
-	### Put All On Feedback into An Array
 	foreach (@onquality) {
 		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"R\");");
-
-		#Zero Out Array for Each pass
 		@routeonqualityratings = ();
 		while (@row = $sth->fetchrow_array) {
 			push (@routeonqualityratings, @row);
 		}
 		push (@routeonratings, @routeonqualityratings);
 
-		## GYM Feedback
 		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"R\");");
-
-		#Zero Out Array for Each pass
 		@gymrouteonqualityratings = ();
 		while (@row = $sth->fetchrow_array) {
 			push (@gymrouteonqualityratings, @row);
 		}
-			push (@gymrouteonratings, @gymrouteonqualityratings);
+		push (@gymrouteonratings, @gymrouteonqualityratings);
 	}
 
-	### Get Average for On Feedback
-	foreach (@routeonratings) {
-		if ($_ ne "" and $_ ne "x") {
-			$routeontotal = $routeontotal + $_;
-			++$routeoncounter;
-		}
-	}
-	if ($routeoncounter) {
-		$routeonaverage = $routeontotal / $routeoncounter;
-	}
+	$routeonaverage = FeedbackAverage(@routeonratings);
 	push (@routetotalaverage, @routeonratings);
 
-	### GYM Get Average for On Feedback
-	foreach (@gymrouteonratings) {
-		if ($_ ne "" and $_ ne "x") {
-			$gymrouteontotal = $gymrouteontotal + $_;
-			++$gymrouteoncounter;
-		}
-	}
-	if ($gymrouteoncounter) {
-		$gymrouteonaverage = $gymrouteontotal / $gymrouteoncounter;
-	}
+	$gymrouteonaverage = FeedbackAverage(@gymrouteonratings);
 	push (@gymroutetotalaverage, @gymrouteonratings);
 
 
-	### Hard Feedback Average ###
-
-	### Put All Hard Feedback into An Array
 	foreach (@hardquality) {
 		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"R\");");
-
-		#Zero Out Array for Each pass
 		@routehardqualityratings = ();
 		while (@row = $sth->fetchrow_array) {
 			push (@routehardqualityratings, @row);
 		}
 		push (@routehardratings, @routehardqualityratings);
 
-		## GYM Feedback
 		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"R\");");
-
-		#Zero Out Array for Each pass
 		@gymroutehardqualityratings = ();
 		while (@row = $sth->fetchrow_array) {
 			push (@gymroutehardqualityratings, @row);
@@ -705,60 +596,19 @@ elsif ($action eq "Report") {
 		push (@gymroutehardratings, @gymroutehardqualityratings);
 	}
 
-	### Get Average for HardFeedback
-	foreach (@routehardratings) {
-		if ($_ ne "" and $_ ne "x") {
-			$routehardtotal = $routehardtotal + $_;
-			++$routehardcounter;
-		}
-	}
-	if ($routehardcounter) {
-		$routehardaverage = $routehardtotal / $routehardcounter;
-	}
+	$routehardaverage = FeedbackAverage(@routehardratings);
 	push (@routetotalaverage, @routehardratings);
 
-	### GYM Get Average for HardFeedback
-	foreach (@gymroutehardratings) {
-		if ($_ ne "" and $_ ne "x") {
-			$gymroutehardtotal = $gymroutehardtotal + $_;
-			++$gymroutehardcounter;
-		}
-	}
-	if ($gymroutehardcounter) {
-		$gymroutehardaverage = $gymroutehardtotal / $gymroutehardcounter;
-	}
+	$gymroutehardaverage = FeedbackAverage(@gymroutehardratings);
 	push (@gymroutetotalaverage, @gymroutehardratings);
 
-	### Get Total Average for Feedback
-	foreach (@routetotalaverage) {
-		if ($_ ne "" and $_ ne "x") {
-			$routetotaltotal = $routetotaltotal + $_;
-			++$routetotalcounter;
-		}
-	}
+	$routetotalaverage = FeedbackAverage(@routetotalaverage);
+	$gymroutetotalaverage = FeedbackAverage(@gymroutetotalaverage);
 
-	if ($routetotalcounter) {
-		$routetotalaverage = $routetotaltotal / $routetotalcounter;
-	}
-
-	##Round the Numbers
 	$routesoftaveragefeedback = sprintf "%.2f", $routesoftaverage;
 	$routeonaveragefeedback = sprintf "%.2f", $routeonaverage;
 	$routehardaveragefeedback = sprintf "%.2f", $routehardaverage;
 	$routetotalaveragefeedback = sprintf "%.2f", $routetotalaverage;
-
-	### Get GYM Total Average for Feedback
-	foreach (@gymroutetotalaverage) {
-		if ($_ ne "" and $_ ne "x") {
-			$gymroutetotaltotal = $gymroutetotaltotal + $_;
-			++$gymroutetotalcounter;
-		}
-	}
-	if ($gymroutetotalcounter) {
-		$gymroutetotalaverage = $gymroutetotaltotal / $gymroutetotalcounter;
-	}
-
-	##Round the Numbers
 	$gymroutesoftaveragefeedback = sprintf "%.2f", $gymroutesoftaverage;
 	$gymrouteonaveragefeedback = sprintf "%.2f", $gymrouteonaverage;
 	$gymroutehardaveragefeedback = sprintf "%.2f", $gymroutehardaverage;
