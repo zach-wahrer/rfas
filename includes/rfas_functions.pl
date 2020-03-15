@@ -6,7 +6,13 @@ sub RunSQL {
 }
 
 sub PrintDateBox {
-	print "<br><br>@_ Date: <input type='text' name=reviewdate id='datepicker' autocomplete='off'/><br><br>";
+    if (@_ == '') {
+	    print "<br><br>Date: <input type='text' name=date id='datepicker' autocomplete='off'/><br><br>";
+    }
+    else {
+		print "<br><br>Review Date: <input type='text' name=reviewdate id='datepicker' autocomplete='off'/><br><br>";
+
+    }
 }
 
 sub PrintFeedbackBoxes {
