@@ -618,18 +618,16 @@ elsif ($action eq "Report") {
 	########## BOULDER % OF GRADE SET W/ FEEDBACK ###########
 
 	@feedbackquality = (@softquality,@onquality,@hardquality);
-	RunSQL("SELECT  `ID` FROM  `Boulder_Grade_Index`;");
 
+	RunSQL("SELECT  `ID` FROM  `Boulder_Grade_Index`;");
 	while (@row = $sth->fetchrow_array) {
 		push (@boulderindexgrades, @row);
 	}
 
-	### Get Number For Each Grade For Setter
 	foreach (@boulderindexgrades) {
 
 		### For Number Set Per Grade ###
 		RunSQL("SELECT `Index` FROM `Feedback_Data` WHERE `Grade` = \"$_\" AND`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"B\");");
-
 		$bouldernumberset = "0";
 		while (@row = $sth->fetchrow_array) {
 			++$bouldernumberset;
@@ -638,7 +636,6 @@ elsif ($action eq "Report") {
 
 		### For Total Set Per Grade ###
 		RunSQL("SELECT `Index` FROM `Feedback_Data` WHERE `Grade` = \"$_\" AND`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"B\");");
-
 		$bouldertotalnumberset = "0";
 		while (@row = $sth->fetchrow_array) {
 			++$bouldertotalnumberset;
@@ -647,7 +644,6 @@ elsif ($action eq "Report") {
 
 		### Make Grade Array ###
 		RunSQL("SELECT `Boulder Grade` FROM `Boulder_Grade_Index` WHERE `ID` = \"$_\";");
-
 		while (@row = $sth->fetchrow_array) {
 			push (@bouldergradeindex, @row);
 		}
@@ -657,7 +653,6 @@ elsif ($action eq "Report") {
 		@boulderfeedbackgrade = ();
 		foreach (@feedbackquality) {
 			RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Grade` = \"$grade\" AND (`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\') AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"B\");");
-
 			while (@row = $sth->fetchrow_array) {
 				push (@boulderfeedbackgrade, @row);
 			}
@@ -668,17 +663,7 @@ elsif ($action eq "Report") {
 		$settertotalaverage = "0";
 
 		### Average Setter Feedback
-		foreach (@boulderfeedbackgrade) {
-			if ($_ ne "" and $_ ne "x") {
-				$setterfeedbacktotal = $setterfeedbacktotal + $_;
-				++$settertotalcounter;
-			}
-		}
-		if ($settertotalcounter) {
-			$settertotalaverage = $setterfeedbacktotal / $settertotalcounter;
-		}
-
-		##Round the Numbers
+		$settertotalaverage = FeedbackAverage(@boulderfeedbackgrade);
 		$settertotalaverage = sprintf "%.2f", $settertotalaverage;
 		push (@settertotals, $settertotalaverage);
 
@@ -687,29 +672,14 @@ elsif ($action eq "Report") {
 		@boulderfeedbackgrade = ();
 		foreach (@feedbackquality) {
 			RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Grade` = \"$grade\" AND (`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\') AND (`Type` = \"B\");");
-
 			while (@row = $sth->fetchrow_array) {
 				push (@boulderfeedbackgrade, @row);
 			}
 
 		}
 
-		$gymfeedbacktotal = "0";
-		$gymtotalcounter = "0";
 		$gymtotalaverage = "0";
-
-		### Average Setter Feedback
-		foreach (@boulderfeedbackgrade) {
-			if ($_ ne "" and $_ ne "x") {
-				$gymfeedbacktotal = $gymfeedbacktotal + $_;
-				++$gymtotalcounter;
-			}
-		}
-		if ($gymtotalcounter) {
-			$gymtotalaverage = $gymfeedbacktotal / $gymtotalcounter;
-		}
-
-		##Round the Numbers
+		$gymtotalaverage = FeedbackAverage(@boulderfeedbackgrade);
 		$gymtotalaverage = sprintf "%.2f", $gymtotalaverage;
 		push (@gymtotals, $gymtotalaverage);
 
@@ -717,30 +687,23 @@ elsif ($action eq "Report") {
 
 	########## ROUTE % OF GRADE SET W/ FEEDBACK ###########
 
-	## Query For Grades
 	RunSQL("SELECT  `ID` FROM  `Route_Grade_Index`;");
-
 	while (@row = $sth->fetchrow_array) {
 		push (@routeindexgrades, @row);
 	}
 
-	### Get Number For Each Grade For Setter
 	foreach (@routeindexgrades) {
-
 		### For Number Set Per Grade ###
 		RunSQL("SELECT `Index` FROM `Feedback_Data` WHERE `Grade` = \"$_\" AND`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"R\");");
 		$routenumberset = "0";
-
 		while (@row = $sth->fetchrow_array) {
 			++$routenumberset;
 		}
-
 		push (@routenumberset, $routenumberset);
 
 		### For Total Set Per Grade ###
 		RunSQL("SELECT `Index` FROM `Feedback_Data` WHERE `Grade` = \"$_\" AND`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Type` = \"R\");");
 		$routetotalnumberset = "0";
-
 		while (@row = $sth->fetchrow_array) {
 			++$routetotalnumberset;
 		}
@@ -748,7 +711,6 @@ elsif ($action eq "Report") {
 
 		### Make Grade Array ###
 		RunSQL("SELECT `Route Grade` FROM `Route_Grade_Index` WHERE `ID` = \"$_\";");
-
 		while (@row = $sth->fetchrow_array) {
 			push (@routegradeindex, @row);
 		}
@@ -757,63 +719,31 @@ elsif ($action eq "Report") {
 		$grade = $_;
 		@routefeedbackgrade = ();
 		foreach (@feedbackquality) {
-			## Query For Feedback
 			RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Grade` = \"$grade\" AND (`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\') AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Type` = \"R\");");
-
 			while (@row = $sth->fetchrow_array) {
 				push (@routefeedbackgrade, @row);
 			}
 		}
 
-		$setterfeedbacktotal = "0";
-		$settertotalcounter = "0";
 		$settertotalaverage = "0";
-
-		### Average Setter Feedback
-		foreach (@routefeedbackgrade) {
-			if ($_ ne "" and $_ ne "x") {
-				$setterfeedbacktotal = $setterfeedbacktotal + $_;
-				++$settertotalcounter;
-			}
-		}
-		if ($settertotalcounter) {
-			$settertotalaverage = $setterfeedbacktotal / $settertotalcounter;
-		}
-
-		##Round the Numbers
+		$settertotalaverage = FeedbackAverage(@routefeedbackgrade);
 		$settertotalaverage = sprintf "%.2f", $settertotalaverage;
 		push (@routesettertotals, $settertotalaverage);
 
 
-	### Get GYM Feedback Average ###
-	$grade = $_;
-	@routefeedbackgrade = ();
-	foreach (@feedbackquality) {
-		## Query For Feedback
-		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Grade` = \"$grade\" AND (`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\') AND (`Type` = \"R\");");
-
-		while (@row = $sth->fetchrow_array) {
-			push (@routefeedbackgrade, @row);
+		### Get GYM Feedback Average ###
+		$grade = $_;
+		@routefeedbackgrade = ();
+		foreach (@feedbackquality) {
+			RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Grade` = \"$grade\" AND (`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\') AND (`Type` = \"R\");");
+			while (@row = $sth->fetchrow_array) {
+				push (@routefeedbackgrade, @row);
+			}
 		}
-	}
 
-	$gymfeedbacktotal = "0";
-	$gymtotalcounter = "0";
-	$gymtotalaverage = "0";
-
-	### Average Setter Feedback
-	foreach (@routefeedbackgrade) {
-		if ($_ ne "" and $_ ne "x") {
-			$gymfeedbacktotal = $gymfeedbacktotal + $_;
-			++$gymtotalcounter;
-		}
-	}
-	if ($gymtotalcounter) {
-		$gymtotalaverage = $gymfeedbacktotal / $gymtotalcounter;
-	}
-
-	##Round the Numbers
-	$gymtotalaverage = sprintf "%.2f", $gymtotalaverage;
+		$gymtotalaverage = "0";
+		$gymtotalaverage = FeedbackAverage(@routefeedbackgrade);
+		$gymtotalaverage = sprintf "%.2f", $gymtotalaverage;
 		push (@routegymtotals, $gymtotalaverage);
 	}
 
@@ -824,9 +754,7 @@ elsif ($action eq "Report") {
 
 	## BOULDERS
 
-	## Query For Feedback
 	RunSQL("SELECT $comments FROM `Feedback_Data` WHERE (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\') AND (`Type` = \"B\");");
-
 	while (@row = $sth->fetchrow_array) {
 			$comment = "";
 			if ($row[0] ne "") {
@@ -859,9 +787,7 @@ elsif ($action eq "Report") {
 
 	## ROUTES
 
-	## Query For Feedback
 	RunSQL("SELECT $comments FROM `Feedback_Data` WHERE (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\") AND (`Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\') AND (`Type` = \"R\");");
-
 	while (@row = $sth->fetchrow_array) {
 			$comment = "";
 			if ($row[0] ne "") {
@@ -1145,13 +1071,12 @@ elsif ($action eq "TeamReport") {
 	## Soft Boulders
 	$softfeedbackcounter = "0";
 	foreach (@softquality) {
-		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Type` = \'B\' AND `Date` BETWEEN \"$sixmonthsdate\" AND  \"$reviewdate\";");
 
+		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Type` = \'B\' AND `Date` BETWEEN \"$sixmonthsdate\" AND  \"$reviewdate\";");
 		@counter = ();
 		while (@row = $sth->fetchrow_array) {
 			push (@counter, @row);
 		}
-
 		foreach (@counter) {
 			if ($_ ne "") {
 				++$softfeedbackcounter;
@@ -1163,8 +1088,8 @@ elsif ($action eq "TeamReport") {
 	## On Boulders
 	$onfeedbackcounter = "0";
 	foreach (@onquality) {
-		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Type` = \'B\' AND `Date` BETWEEN \"$sixmonthsdate\" AND  \"$reviewdate\";");
 
+		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Type` = \'B\' AND `Date` BETWEEN \"$sixmonthsdate\" AND  \"$reviewdate\";");
 		while (@row = $sth->fetchrow_array) {
 			push (@counter, @row);
 		}
@@ -1207,8 +1132,8 @@ elsif ($action eq "TeamReport") {
 	## Soft Routes
 	$softfeedbackcounter = "0";
 	foreach (@softquality) {
-		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Type` = \'R\' AND `Date` BETWEEN \"$sixmonthsdate\" AND  \"$reviewdate\";");
 
+		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Type` = \'R\' AND `Date` BETWEEN \"$sixmonthsdate\" AND  \"$reviewdate\";");
 		@counter = ();
 		while (@row = $sth->fetchrow_array) {
 			push (@counter, @row);
@@ -1225,8 +1150,8 @@ elsif ($action eq "TeamReport") {
 	## On Routes
 	$onfeedbackcounter = "0";
 	foreach (@onquality) {
-		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Type` = \'R\' AND `Date` BETWEEN  \"$sixmonthsdate\" AND  \"$reviewdate\";");
 
+		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Type` = \'R\' AND `Date` BETWEEN  \"$sixmonthsdate\" AND  \"$reviewdate\";");
 		while (@row = $sth->fetchrow_array) {
 			push (@counter, @row);
 		}
@@ -1242,8 +1167,8 @@ elsif ($action eq "TeamReport") {
 	## Hard Route
 	$hardfeedbackcounter = "0";
 	foreach (@hardquality) {
-		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Type` = \'R\' AND`Date` BETWEEN  \"$sixmonthsdate\" AND  \"$reviewdate\";");
 
+		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Type` = \'R\' AND`Date` BETWEEN  \"$sixmonthsdate\" AND  \"$reviewdate\";");
 		@counter = ();
 		while (@row = $sth->fetchrow_array) {
 			push (@counter, @row);
@@ -1277,7 +1202,6 @@ elsif ($action eq "TeamReport") {
 
 	###Routes that got upgraded
 	RunSQL("SELECT `OriginalGrade` FROM `Feedback_Data` WHERE `Type` = \'R\' AND `OriginalGrade` < `Grade` AND `Date` BETWEEN  \"$sixmonthsdate\" AND  \"$reviewdate\";");
-
 	while (@row = $sth->fetchrow_array) {
 		if ($row[0] != "") {
 			++$uproutes;
@@ -1286,7 +1210,6 @@ elsif ($action eq "TeamReport") {
 
 	###Routes that got downgraded
 	RunSQL("SELECT `OriginalGrade` FROM `Feedback_Data` WHERE `Type` = \'R\' AND `OriginalGrade` > `Grade` AND `Date` BETWEEN  \"$sixmonthsdate\" AND  \"$reviewdate\";");
-
 	while (@row = $sth->fetchrow_array) {
 		if ($row[0] != "") {
 			++$downroutes;
@@ -1295,7 +1218,6 @@ elsif ($action eq "TeamReport") {
 
 	###Boulder that got upgraded
 	RunSQL("SELECT `OriginalGrade` FROM `Feedback_Data` WHERE `Type` = \'B\' AND `OriginalGrade` < `Grade` AND `Date` BETWEEN  \"$sixmonthsdate\" AND  \"$reviewdate\";");
-
 	while (@row = $sth->fetchrow_array) {
 		if ($row[0] != "") {
 			++$upboulder;
@@ -1304,7 +1226,6 @@ elsif ($action eq "TeamReport") {
 
 	###Boulder that got downgraded
 	RunSQL("SELECT `OriginalGrade` FROM `Feedback_Data` WHERE `Type` = \'B\' AND `OriginalGrade` > `Grade` AND `Date` BETWEEN  \"$sixmonthsdate\" AND  \"$reviewdate\";");
-
 	while (@row = $sth->fetchrow_array) {
 		if ($SSrow[0] != "") {
 			++$downboulder;
