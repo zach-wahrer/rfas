@@ -32,7 +32,7 @@ sub PrintSubmit {
 }
 
 sub PrintSetterBox {
-	print "<select name=\"$_\">\n
+	print "<select name=\"@_\">\n
 			<option value=\"Blank\"> </option>\n";
 	RunSQL("SELECT `Name` FROM `Setter_Index`");
 	while (@row = $sth->fetchrow_array) {
