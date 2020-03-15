@@ -7,7 +7,7 @@
 use DBI;
 
 ### Import config file vars ###
-open CONFIG, "/usr/config/rfas_config.pl" or die "Couldn't open the config file.";
+open CONFIG, "/usr/rfas/rfas_config.pl" or die "Couldn't open the config file.";
 my $config = join "", <CONFIG>;
 close CONFIG;
 eval $config;
