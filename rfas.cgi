@@ -31,27 +31,13 @@ or die "Connection Error: $DBI::errstr\n";
 $q = CGI->new();
 $action = $q->param('action');
 
-### Load Calendar widget if Action is present ###
-if (defined($action)) {
-	$calendarwidget = '<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-		<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-		<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-		<link rel="stylesheet" href="/resources/demos/style.css" />
-		<script>
-		$(function() {
-		$( "#datepicker" ).datepicker();
-		});
-		$(function() {
-		$( "#datepicker1" ).datepicker1();
-		});
-		</script>'
-};
-
 ## Start HTML
 print "Content-type:  text/html\n\n";
 print "<head>\n";
 print "<title>RFAS - V0.5</title>\n";
-print $calendarwidget;
+if (defined($action)) {
+	PrintCalendarWidgit();
+}
 print "</head>\n";
 print "<body>\n";
 
