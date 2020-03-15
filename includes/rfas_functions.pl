@@ -54,4 +54,18 @@ sub PrintLengthOfReview {
     print '<input type="radio" name="duration" value="oneyear"> 1 Year<br>';
 }
 
+sub FeedbackAverage {
+    my $total = 0;
+    my $counter = 0;
+    foreach (@_) {
+        if ($_ ne "" and $_ ne "x") {
+            $total = $total + $_;
+            ++$counter;
+        }
+    }
+    if ($counter) {
+        return $total / $counter;
+    }
+}
+
 1;

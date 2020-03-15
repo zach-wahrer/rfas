@@ -318,9 +318,15 @@ elsif ($action eq "Report") {
 	$setter = $q->param('setter');
 	$reviewdate = $q->param('reviewdate');
 	$duration = $q->param('duration');
-	@softquality = ("Soft1.Quality", "Soft2.Quality", "Soft3.Quality", "Soft4.Quality", "Soft5.Quality", "Soft6.Quality", "Soft7.Quality", "Soft8.Quality");
-	@onquality = ("On1.Quality", "On2.Quality", "On3.Quality", "On4.Quality", "On5.Quality", "On6.Quality", "On7.Quality", "On8.Quality");
-	@hardquality = ("Hard1.Quality", "Hard2.Quality", "Hard3.Quality", "Hard4.Quality", "Hard5.Quality", "Hard6.Quality", "Hard7.Quality", "Hard8.Quality");
+
+	@softquality = ("Soft1.Quality", "Soft2.Quality", "Soft3.Quality", "Soft4.Quality",
+			"Soft5.Quality", "Soft6.Quality", "Soft7.Quality", "Soft8.Quality");
+
+	@onquality = ("On1.Quality", "On2.Quality", "On3.Quality", "On4.Quality",
+				"On5.Quality", "On6.Quality", "On7.Quality", "On8.Quality");
+
+	@hardquality = ("Hard1.Quality", "Hard2.Quality", "Hard3.Quality", "Hard4.Quality",
+			"Hard5.Quality", "Hard6.Quality", "Hard7.Quality", "Hard8.Quality");
 
 	### Check duration and set proper length of time
 	if ($duration eq "sixmonths") {
@@ -362,23 +368,16 @@ elsif ($action eq "Report") {
 
 	############## COMBINED TOTALS #################
 
-	### Soft Feedback Average ###
-
-	### Put All Soft Feedback into An Array
 	foreach (@softquality) {
-		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\");");
 
-		#Zero Out Array for Each pass
+		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\");");
 		@softqualityratings = ();
 		while (@row = $sth->fetchrow_array) {
 			push (@softqualityratings, @row);
 		}
 		push (@softratings, @softqualityratings);
 
-		## Get Gym Total Soft Feedback ##
 		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\';");
-
-		#Zero Out Array for Each pass
 		@gymsoftqualityratings = ();
 		while (@row = $sth->fetchrow_array) {
 			push (@gymsoftqualityratings, @row);
@@ -386,38 +385,16 @@ elsif ($action eq "Report") {
 		push (@gymsoftratings, @gymsoftqualityratings);
 	}
 
-	### Get Average for Soft Feedback
-	foreach (@softratings) {
-		if ($_ ne "" and $_ ne "x") {
-			$softtotal = $softtotal + $_;
-			++$softcounter;
-		}
-	}
-	if ($softcounter) {
-		$softaverage = $softtotal / $softcounter;
-	}
+	$softaverage = FeedbackAverage(@softratings);
 	push (@totalaverage, @softratings);
 
-	### Get Average for GYM Soft Feedback
-	foreach (@gymsoftratings) {
-		if ($_ ne "" and $_ ne "x") {
-			$gymsofttotal = $gymsofttotal + $_;
-			++$gymsoftcounter;
-		}
-	}
-	if ($gymsoftcounter) {
-		$gymsoftaverage = $gymsofttotal / $gymsoftcounter;
-	}
+	$gymsoftaverage = FeedbackAverage(@gymsoftratings);
 	push (@gymtotalaverage, @gymsoftratings);
 
 
-	### On Feedback Average ###
-
-	### Put All On Feedback into An Array
 	foreach (@onquality) {
-		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\");");
 
-		#Zero Out Array for Each pass
+		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\");");
 		@onqualityratings = ();
 		while (@row = $sth->fetchrow_array) {
 			push (@onqualityratings, @row);
@@ -425,11 +402,8 @@ elsif ($action eq "Report") {
 		push (@onratings, @onqualityratings);
 	}
 
-	### Gym Wide On Feedback
 	foreach (@onquality) {
 		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\';");
-
-		#Zero Out Array for Each pass
 		@gymonqualityratings = ();
 		while (@row = $sth->fetchrow_array) {
 			push (@gymonqualityratings, @row);
@@ -437,34 +411,13 @@ elsif ($action eq "Report") {
 		push (@gymonratings, @gymonqualityratings);
 	}
 
-	### Get Average for On Feedback
-	foreach (@onratings) {
-		if ($_ ne "" and $_ ne "x") {
-			$ontotal = $ontotal + $_;
-			++$oncounter;
-		}
-	}
-	if ($oncounter) {
-		$onaverage = $ontotal / $oncounter;
-	}
+	$onaverage = FeedbackAverage(@onratings);
 	push (@totalaverage, @onratings);
 
-	### Get GYM Average for On Feedback
-	foreach (@gymonratings) {
-		if ($_ ne "" and $_ ne "x") {
-			$gymontotal = $gymontotal + $_;
-			++$gymoncounter;
-		}
-	}
-	if ($gymoncounter) {
-		$gymonaverage = $gymontotal / $gymoncounter;
-	}
+	$gymonaverage = FeedbackAverage(@gymonratings);
 	push (@gymtotalaverage, @gymonratings);
 
 
-	### Hard Feedback Average ###
-
-	### Put All Hard Feedback into An Array
 	foreach (@hardquality) {
 		RunSQL("SELECT `$_` FROM `Feedback_Data` WHERE `Date` BETWEEN  \'$sixmonthsdate\' AND  \'$reviewdate\' AND (`Name1` = \"$setterid\" or `Name2` = \"$setterid\" or `Name3` = \"$setterid\");");
 
