@@ -70,7 +70,6 @@ elsif ($action eq "add") {
 
 	### Print Route Rating Boxes
 	RunSQL("SELECT `Route Grade` FROM `Route_Grade_Index`");
-
 	while (@row = $sth->fetchrow_array) {
 		push (@routegrade, @row);
 	}
@@ -93,7 +92,6 @@ elsif ($action eq "add") {
 
 	###Print Boulder Rating Boxes
 	RunSQL("SELECT `Boulder Grade` FROM `Boulder_Grade_Index`");
-
 	while (@row = $sth->fetchrow_array) {
 		push (@bouldergrade, @row);
 	}
@@ -134,7 +132,6 @@ elsif ($action eq "add") {
 
 elsif ($action eq "Submit") {
 
-	### Get Variables
 	$setter1 = $q->param('setter1');
 	$setter2 = $q->param('setter2');
 	$setter3 = $q->param('setter3');
