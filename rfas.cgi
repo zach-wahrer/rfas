@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Routesetting Feedback Analysis Software v0.5
+# Routesetting Feedback Analysis Software v0.6
 # Written by Zach Wahrer
 
 ### Load Modules ###
@@ -34,7 +34,7 @@ $action = $q->param('action');
 ## Start HTML
 print "Content-type:  text/html\n\n";
 print "<head>\n";
-print "<title>RFAS - V0.5</title>\n";
+print "<title>RFAS - V0.6</title>\n";
 if (defined($action)) {
 	PrintCalendarWidgit();
 }
@@ -42,7 +42,7 @@ print "</head>\n";
 print "<body>\n";
 
 ### Print Title
-print "Routesetting Feedback Analysis System, V0.5. <br><br><br>\n";
+print "Routesetting Feedback Analysis System, V0.6. <br><br><br>\n";
 
 ########### Print User Options if first run ########
 
