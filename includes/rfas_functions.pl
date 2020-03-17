@@ -51,6 +51,10 @@ sub PrintDataAvailableBox {
     $newest_date = $sth->fetchrow_array;
     RunSQL("SELECT Date FROM `Feedback_Data` ORDER BY Date ASC LIMIT 1;");
     $oldest_date = $sth->fetchrow_array;
+
+	$newest_date = DateMDY($newest_date);
+	$oldest_date = DateMDY($oldest_date);
+
     print "Data available from <b>$oldest_date</b> to <b>$newest_date</b>.<br><br>";
 }
 
@@ -87,6 +91,11 @@ sub PrintCalendarWidgit {
 		$( "#datepicker1" ).datepicker1();
 		});
 		</script>';
+}
+
+sub DateMDY {
+	($year, $month, $day) = split '-', $_[0];
+	return "$month/$day/$year";
 }
 
 1;
